@@ -32,8 +32,8 @@ export const TranslationCommand = cmd({
       .map((arg) => (arg.includes(" ") ? `"${arg.replace(/"/g, '\\"')}"` : arg))
       .join(" ")
 
-    let src_lang = args.src_lang as TranslationLanguages.LanguageCode
-    let tgt_lang = args.tgt_lang as TranslationLanguages.LanguageCode
+    let src_lang = args.src_lang as TranslationLanguages.LanguageCode | undefined
+    let tgt_lang = args.tgt_lang as TranslationLanguages.LanguageCode | undefined
 
     const translation = new Translation()
 
