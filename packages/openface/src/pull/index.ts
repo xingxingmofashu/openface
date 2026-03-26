@@ -8,7 +8,7 @@ const { config } = useLocal()
 
 export async function pull(task: SUPPORTED_TASKS_TYPES, repo: string, opts: PretrainedModelOptions = {}) {
   const options = defu(opts, {
-    cache_dir: config.models.cache_dir,
+    cache_dir: config.models_cache_dir,
     dtype: 'fp32'
   } satisfies PretrainedModelOptions)
 

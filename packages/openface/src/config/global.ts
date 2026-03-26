@@ -18,8 +18,15 @@ export function useGlobal() {
       },
     },
     local: {
-      models: {
-        cache_dir: resolve(os.homedir(),`.local/share/${name}/models`)
+      models_cache_dir: resolve(os.homedir(), `.local/share/${name}/models`)
+    },
+    tasks: {
+      translation: {
+        default: {
+          model: "Xenova/t5-small",
+          src_lang: "zho_Hans",
+          tgt_lang: "eng_Latn"
+        }
       }
     }
   }

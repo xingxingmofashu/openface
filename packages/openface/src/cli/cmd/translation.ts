@@ -1,6 +1,8 @@
 import { cmd } from "./cmd";
 import { Translation } from "../../translation"
 import { TranslationLanguages } from "../../translation/languages"
+import { useGlobal } from "@/config/global"
+import consola from "consola";
 
 export const TranslationCommand = cmd({
   command: "translation [message..]",
@@ -13,12 +15,19 @@ export const TranslationCommand = cmd({
         array: true,
         default: [],
       })
+      .option("model", {
+        type: "string",
+        describe: "",
+        default: undefined
+      })
       .option("src_lang", {
         type: "string",
+        choices: Object.values(TranslationLanguages.languages),
         describe: "The source language code (e.g., 'en' for English)."
       })
       .option("tgt_lang", {
         type: "string",
+        choices: Object.values(TranslationLanguages.languages),
         describe: "The target language code (e.g., 'fr' for French).",
       })
       .option('message', {
@@ -27,21 +36,17 @@ export const TranslationCommand = cmd({
         demandOption: true
       }),
   handler: async (args) => {
-
     let message = [...args.message, ...(args["--"] || [])]
       .map((arg) => (arg.includes(" ") ? `"${arg.replace(/"/g, '\\"')}"` : arg))
       .join(" ")
 
-    let src_lang = args.src_lang as TranslationLanguages.LanguageCode | undefined
-    let tgt_lang = args.tgt_lang as TranslationLanguages.LanguageCode | undefined
-
-    const translation = new Translation()
+    const translation = new Translation(args.model)
 
     const output = await translation.translator(message, {
-      src_lang,
-      tgt_lang
+      src_lang: args.src_lang,
+      tgt_lang: args.tgt_lang
     })
 
-    console.log(`Text: ${JSON.stringify(output)};`);
+    consola.log(`Text: ${JSON.stringify(output)};`);
   }
 })

@@ -1,9 +1,7 @@
-import { pipeline } from "@huggingface/transformers"
-import type {
-  PretrainedModelOptions,
-  TextGenerationConfig
-} from "@huggingface/transformers"
+import { pipeline, env } from "@huggingface/transformers"
+import type { PretrainedModelOptions, TextGenerationConfig } from "@huggingface/transformers"
 import { TranslationLanguages } from "./languages"
+import { defu } from "defu"
 
 
 /**
@@ -12,9 +10,13 @@ import { TranslationLanguages } from "./languages"
    * operation and we don't want to do it every time we want to translate a sentence.
    */
 export class Translation {
-  model = "Xenova/nllb-200-distilled-600M";
-  options: PretrainedModelOptions = {
-    dtype: 'q8'
+  private model?: string
+  private options?: PretrainedModelOptions = {
+    cache_dir: env.cacheDir
+  }
+
+  constructor(model?: string, options?: PretrainedModelOptions) {
+    this.model = model, this.options = defu(this.options, options)
   }
 
   async translator(texts: string | string[], config?: TranslationConfig) {
