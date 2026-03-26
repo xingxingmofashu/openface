@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "name": "transformers",
+  "name": "openface",
   "type": "module",
   "license": "MIT",
   "private": true,

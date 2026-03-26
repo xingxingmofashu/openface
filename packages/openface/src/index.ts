@@ -1,16 +1,14 @@
 import yargs from 'yargs'
 import { hideBin } from "yargs/helpers"
 import { TranslationCommand } from "./cli/cmd/translation"
-import { TuiThreadCommand } from './cli/cmd/tui/thread'
 import { PullCommand } from './cli/cmd/pull'
 
 const cli = yargs(hideBin(process.argv))
   .parserConfiguration({ "populate--": true })
-  .scriptName("transformers")
+  .scriptName("openface")
   .wrap(100)
   .help("help", "show help")
   .alias("help", "h")
-  .command(TuiThreadCommand)
   .command(TranslationCommand)
   .command(PullCommand)
   .fail((msg, err) => {
