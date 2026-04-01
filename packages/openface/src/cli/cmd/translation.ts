@@ -1,7 +1,7 @@
 import { cmd } from "./cmd";
-import { Translation } from "../../translation"
+import { Translation } from "@/tasks/translation"
 import consola from "consola"
-import { TranslationLanguages } from '../../translation/languages'
+import { TranslationLanguages } from '@/tasks/translation/languages'
 
 export const TranslationCommand = cmd({
   command: "translation",

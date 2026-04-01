@@ -2,7 +2,7 @@ import { AutoProcessor, AutoTokenizer, PreTrainedModel, PreTrainedTokenizer, Pro
 import { SUPPORTED_TASKS } from './tasks'
 import type { SUPPORTED_TASKS_TYPES } from './tasks'
 import defu from 'defu'
-import { useConfig } from '../config'
+import { useConfig } from '@/config'
 
 const { config: { huggingface: { pretrained } } } = await useConfig()
 

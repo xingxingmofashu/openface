@@ -1,7 +1,7 @@
 import { cmd } from "./cmd"
-import { pull } from "../../pull"
-import { SUPPORTED_TASKS } from "../../pull/tasks"
-import type { SUPPORTED_TASKS_TYPES } from "../../pull/tasks"
+import { pull } from "@/tasks/pull"
+import { SUPPORTED_TASKS } from "@/tasks/pull/tasks"
+import type { SUPPORTED_TASKS_TYPES } from "@/tasks/pull/tasks"
 import consola from "consola"
 
 export const PullCommand = cmd({
