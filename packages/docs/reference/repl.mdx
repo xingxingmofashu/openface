@@ -1,0 +1,30 @@
+---
+title: "REPL"
+description: "Interactive terminal behavior shared by the translation and text-generation commands."
+---
+
+## Built-in commands
+
+| Command | Description |
+| --- | --- |
+| `.help` | Print the REPL help text. |
+| `.copy <text>` | Copy the generated result to the clipboard. |
+| `.exit` | Exit the current session. |
+
+## How it works
+
+Both `translation` and `text-generation` create a readline-based REPL from `packages/openface/src/cli/utils/createRepl.ts`.
+
+When the REPL starts, it prints a small help banner and waits for user input:
+
+```text
+Type .copy [code] to copy to clipboard. .help for more info.
+> 
+```
+
+## Practical tips
+
+- Use `.help` the first time you start a session.
+- Use `.copy ...` when you want to send the generated text to the clipboard instead of manually selecting terminal output.
+- Use `text-generation --stream` when you want visible incremental output.
+- Translation already uses a streamer internally in the current command implementation.

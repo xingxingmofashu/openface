@@ -1,0 +1,61 @@
+---
+title: "Configuration"
+description: "Global configuration file paths, cache locations, and runtime defaults."
+---
+
+## Global config file
+
+OpenFace reads and writes a global config file at:
+
+```text
+~/.config/openface/config.json
+```
+
+If the file does not exist, the CLI creates it automatically on first run.
+
+## Default cache location
+
+Models are cached under:
+
+```text
+~/.local/share/openface/models
+```
+
+## Runtime defaults
+
+The default config is defined in `packages/openface/src/config/default.ts`. The important runtime defaults are:
+
+- `huggingface.env.cacheDir` points to the local model cache
+- `huggingface.pretrained.model.cache_dir` uses the same cache location
+- `huggingface.pretrained.model.device` defaults to `auto`
+- `huggingface.pretrained.model.dtype` defaults to `auto`
+
+## Example config
+
+```json
+{
+  "huggingface": {
+    "env": {
+      "cacheDir": "/absolute/path/to/model-cache"
+    },
+    "pretrained": {
+      "model": {
+        "cache_dir": "/absolute/path/to/model-cache",
+        "device": "auto",
+        "dtype": "auto"
+      },
+      "tokenizer": {},
+      "processor": {}
+    }
+  }
+}
+```
+
+## How config is applied
+
+On startup, OpenFace:
+
+1. Loads the default config.
+2. Reads `~/.config/openface/config.json`.
+3. Merges user values into the defaults with `defu`.
+4. Applies the resulting Hugging Face environment options before creating pipelines.

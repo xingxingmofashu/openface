@@ -1,0 +1,49 @@
+---
+title: "Architecture"
+description: "How the OpenFace CLI is organized internally."
+---
+
+## High-level flow
+
+```text
+CLI entrypoint
+  -> yargs command modules
+  -> task wrappers
+  -> Hugging Face Transformers pipelines
+  -> local cache + global config
+```
+
+## Main modules
+
+### CLI entrypoint
+
+`packages/openface/src/index.ts` registers the three commands:
+
+- `translation`
+- `text-generation`
+- `pull`
+
+It also configures `yargs` help output and strict argument parsing.
+
+### Command layer
+
+`packages/openface/src/cli/commands/*` handles flag definitions and user-facing command behavior.
+
+### Task layer
+
+`packages/openface/src/tasks/*` wraps the actual Hugging Face work:
+
+- `tasks/translation` builds a translation pipeline
+- `tasks/text-generation` builds a text-generation pipeline
+- `tasks/pull` downloads model artifacts for a selected task
+
+### Config layer
+
+`packages/openface/src/config/*` loads the global config, fills in defaults, and applies the Transformers environment
+before models are used.
+
+## Design notes
+
+- The project is Bun-first and uses TypeScript throughout.
+- Commands are intentionally thin and defer most model work to the task layer.
+- Local cache paths are centralized so download and inference commands share the same storage.

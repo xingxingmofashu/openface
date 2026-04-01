@@ -1,0 +1,47 @@
+---
+title: "text-generation"
+description: "Generate text interactively with a local or cached causal language model."
+---
+
+## Synopsis
+
+```bash
+openface text-generation --model <model-id> [--stream]
+```
+
+## Options
+
+| Flag | Alias | Required | Description |
+| --- | --- | --- | --- |
+| `--model` | `-m` | Yes | Hugging Face model repository ID. |
+| `--stream` | `-s` | No | Stream generated text to stdout while decoding. Defaults to `false`. |
+
+## Recommended workflow
+
+```bash
+openface text-generation --model Xenova/gpt2 --stream
+```
+
+Then type prompts in the REPL:
+
+```text
+> Write a short poem about local AI tooling.
+> .exit
+```
+
+<Warning>
+  In the current implementation, `--stream` is the most reliable way to see generated output directly in the terminal
+  during an interactive session.
+</Warning>
+
+## Conversation state
+
+OpenFace keeps an in-memory `messages` array for the session, so each new prompt can build on earlier prompts and model
+responses inside the same REPL run.
+
+## Usage notes
+
+- Use smaller or optimized local-friendly models when you want faster startup and lower memory usage.
+- Pulling the model in advance with `openface pull --task text-generation --model <model-id>` can reduce the first-run
+  wait time.
+- Exit the REPL with `.exit`.
