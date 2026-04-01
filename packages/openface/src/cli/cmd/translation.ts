@@ -4,7 +4,7 @@ import consola from "consola"
 import { TranslationLanguages } from '../../translation/languages'
 
 export const TranslationCommand = cmd({
-  command: "translation [message..]",
+  command: "translation",
   describe: "Translate with a message.",
   builder: (yargs) =>
     yargs
@@ -17,6 +17,7 @@ export const TranslationCommand = cmd({
       .option("model", {
         alias: 'm',
         type: "string",
+        demandOption: true
       })
       .option("src_lang", {
         alias: 's',

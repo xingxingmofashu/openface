@@ -5,13 +5,18 @@ import type { SUPPORTED_TASKS_TYPES } from "../../pull/tasks"
 import consola from "consola"
 
 export const PullCommand = cmd({
-  command: "pull <model>",
+  command: "pull",
   describe: "Pull a model from Hugging Face Hub.",
   builder: (yargs) =>
     yargs
-      .positional("model", {
-        describe: "Model repository ID (e.g., 'Xenova/nllb-200-distilled-600M')",
+      .positional("pull",{
+        describe: "pull a model.",
         type: "string"
+      })
+      .option("model", {
+        describe: "Model repository ID (e.g., 'Xenova/nllb-200-distilled-600M')",
+        type: "string",
+        demandOption: true
       })
       .option("task", {
         type: "string",
@@ -21,12 +26,12 @@ export const PullCommand = cmd({
       }),
   handler: async (args) => {
     const { model, task } = args as { model: string; task: SUPPORTED_TASKS_TYPES }
-    
+
     try {
       consola.start(`Pulling model '${model}' for task '${task}'...`)
       await pull(task, model)
       consola.success(`Model '${model}' pulled successfully!`)
-      
+
     } catch (error) {
       consola.error("Failed to pull model:", error instanceof Error ? error.message : String(error))
       process.exit(1)

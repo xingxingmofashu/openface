@@ -4,7 +4,7 @@ import consola from "consola";
 
 
 export const TextGenerationCommand = cmd({
-  command: "text-generation [message..]",
+  command: "text-generation",
   describe: "Generation with a message.",
   builder: (yargs) =>
     yargs
@@ -15,7 +15,9 @@ export const TextGenerationCommand = cmd({
         default: [],
       })
       .option("model", {
-        type: "string"
+        type: "string",
+        alias: "m",
+        demandOption: true
       })
       .option('message', {
         type: 'string',
