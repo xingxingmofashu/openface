@@ -1,17 +1,28 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "OpenFace",
+  "name": "@openface/docs",
   "description": "A Bun + TypeScript CLI for local NLP workflows powered by Hugging Face Transformers.",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
     "dark": "#15803D"
   },
+  "icons": {
+    "library": "lucide"
+  },
   "favicon": "/favicon.svg",
   "logo": {
     "light": "/logo/light.svg",
     "dark": "/logo/dark.svg"
+  },
+  "fonts": {
+    "body": {
+      "family": "Fragment Mono"
+    },
+    "heading": {
+      "family": "DM Sans"
+    }
   },
   "navigation": {
     "tabs": [
@@ -29,11 +40,16 @@
           {
             "group": "Commands",
             "pages": [
+              "commands/pull",
               "commands/translation",
-              "commands/text-generation",
-              "commands/pull"
+              "commands/text-generation"
             ]
-          },
+          }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "groups": [
           {
             "group": "Reference",
             "pages": [
@@ -44,34 +60,16 @@
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "GitHub",
-          "href": "https://github.com/xingxing-collective/openface",
-          "icon": "github"
-        },
-        {
-          "anchor": "Hugging Face Transformers",
-          "href": "https://huggingface.co/docs/transformers.js",
-          "icon": "book-open"
-        }
-      ]
-    }
+    ]
   },
   "navbar": {
     "links": [
       {
         "label": "GitHub",
-        "href": "https://github.com/xingxing-collective/openface"
+        "href": "https://github.com/xingxing-collective/openface",
+        "icon": "github"
       }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Quickstart",
-      "href": "/quickstart"
-    }
+    ]
   },
   "contextual": {
     "options": [
