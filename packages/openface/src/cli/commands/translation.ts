@@ -6,11 +6,11 @@ import { createRepl } from "../utils/createRepl";
 
 export const TranslationCommand = cmd({
   command: "translation",
-  describe: "Translate with a message.",
+  describe: "Translate text between languages",
   builder: (yargs) =>
     yargs
       .positional("translation", {
-        describe: "message to send",
+        describe: "Text to translate",
         type: "string",
         array: true,
         default: [],
@@ -18,16 +18,19 @@ export const TranslationCommand = cmd({
       .option("model", {
         alias: 'm',
         type: "string",
+        describe: "Model repository ID",
         demandOption: true
       })
       .option("src_lang", {
         alias: 's',
         type: "string",
+        describe: "Source language code",
         default: "zho_Hans"
       })
       .option("tgt_lang", {
         alias: 't',
         type: "string",
+        describe: "Target language code",
         default: "eng_Latn"
       }),
   handler: async (args) => {

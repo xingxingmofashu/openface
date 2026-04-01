@@ -6,21 +6,21 @@ import consola from "consola"
 
 export const PullCommand = cmd({
   command: "pull",
-  describe: "Pull a model from Hugging Face Hub.",
+  describe: "Download models from Hugging Face Hub",
   builder: (yargs) =>
     yargs
-      .positional("pull",{
-        describe: "pull a model.",
+      .positional("pull", {
+        describe: "Download models from Hugging Face Hub.",
         type: "string"
       })
       .option("model", {
-        describe: "Model repository ID (e.g., 'Xenova/nllb-200-distilled-600M')",
+        describe: "Model repository ID",
         type: "string",
         demandOption: true
       })
       .option("task", {
         type: "string",
-        describe: "The task type (e.g., 'text-classification', 'translation', etc.)",
+        describe: "Task type",
         choices: Object.keys(SUPPORTED_TASKS),
         demandOption: true
       }),
