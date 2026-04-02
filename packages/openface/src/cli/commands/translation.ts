@@ -21,6 +21,12 @@ export const TranslationCommand = cmd({
         describe: "Model repository ID",
         demandOption: true
       })
+      .option("stream", {
+        type: "boolean",
+        alias: "s",
+        describe: "Enable streaming output",
+        default: false
+      })
       .option("src_lang", {
         alias: 's',
         type: "string",
@@ -35,18 +41,19 @@ export const TranslationCommand = cmd({
       }),
   handler: async (args) => {
     const { translator, tokenizer } = await useTranslation(args.model)
+    const streamer = args.stream ? new TextStreamer(tokenizer, {
+      skip_prompt: true
+    }) : undefined
 
     const repl = await createRepl({
       input: process.stdin,
-      output: process.stdout
+      output: process.stdout,
+      stream: args.stream,
     }, async (input) => {
       const output = await translator(input, {
         src_lang: args.src_lang as TranslationLanguages.LanguageCode,
         tgt_lang: args.tgt_lang as TranslationLanguages.LanguageCode,
-        streamer: new TextStreamer(tokenizer, {
-          skip_prompt: true,
-          skip_special_tokens: true
-        }),
+        streamer,
       })
       return (output as TranslationOutput).at(-1)?.translation_text
     })

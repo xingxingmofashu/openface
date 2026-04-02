@@ -32,7 +32,8 @@ export const TextGenerationCommand = cmd({
     }) : undefined
     const repl = await createRepl({
       input: process.stdin,
-      output: process.stdout
+      output: process.stdout,
+      stream:args.stream
     }, async (input) => {
       if (input) {
         messages.push({

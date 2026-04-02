@@ -2,7 +2,11 @@ import { createInterface, type ReadLineOptions } from 'node:readline/promises'
 import consola from 'consola'
 import clipboardy from 'clipboardy'
 
-export async function createRepl(options: ReadLineOptions, callback: (input: string) => Promise<string | undefined>) {
+export interface CreateReplOptions extends ReadLineOptions {
+  stream?: boolean
+}
+
+export async function createRepl(options: CreateReplOptions, callback?: (input: string) => Promise<string | undefined>) {
   const repl = createInterface(options)
   repl.write(`Type \x1b[36m.copy [code]\x1b[0m to copy to clipboard. \x1b[36m.help\x1b[0m for more info.\n`)
   while (true) {
@@ -10,7 +14,7 @@ export async function createRepl(options: ReadLineOptions, callback: (input: str
     if (input === ".exit") {
       break
     }
-    
+
     if (input === ".help") {
       const helpinfo = [{
         titile: `\n\x1b[1mREPL Commands:\x1b[0m\n`,
@@ -29,7 +33,10 @@ export async function createRepl(options: ReadLineOptions, callback: (input: str
       continue
     }
 
-    const output = await callback(input.replace('.copy ',''))
+    const output = await callback?.(input.replace('.copy ', ''))
+    if (!options.stream && output) {
+      repl.write(`${output}\n`)
+    }
 
     if (input.startsWith(".copy ")) {
       try {

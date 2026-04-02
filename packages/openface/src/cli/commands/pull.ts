@@ -14,12 +14,14 @@ export const PullCommand = cmd({
         type: "string"
       })
       .option("model", {
-        describe: "Model repository ID",
         type: "string",
+        alias:'m',
+        describe: "Model repository ID",
         demandOption: true
       })
       .option("task", {
         type: "string",
+        alias:'t',
         describe: "Task type",
         choices: Object.keys(SUPPORTED_TASKS),
         demandOption: true

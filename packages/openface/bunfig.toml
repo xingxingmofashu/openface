@@ -1,4 +1,2 @@
-preload = ["@opentui/solid/preload"]
-
 # Enable code coverage
 coverage = true
