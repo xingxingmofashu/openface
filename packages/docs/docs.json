@@ -25,37 +25,42 @@
     }
   },
   "navigation": {
-    "tabs": [
+    "languages": [
       {
-        "tab": "Guides",
-        "groups": [
+        "language": "en",
+        "tabs": [
           {
-            "group": "Getting Started",
-            "pages": [
-              "index",
-              "quickstart",
-              "development"
+            "tab": "Guides",
+            "groups": [
+              {
+                "group": "Getting Started",
+                "pages": [
+                  "en/index",
+                  "en/quickstart",
+                  "en/development"
+                ]
+              },
+              {
+                "group": "Commands",
+                "pages": [
+                  "en/commands/pull",
+                  "en/commands/translation",
+                  "en/commands/text-generation"
+                ]
+              }
             ]
           },
           {
-            "group": "Commands",
-            "pages": [
-              "commands/pull",
-              "commands/translation",
-              "commands/text-generation"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "Reference",
-        "groups": [
-          {
-            "group": "Reference",
-            "pages": [
-              "reference/repl",
-              "reference/configuration",
-              "reference/architecture"
+            "tab": "Reference",
+            "groups": [
+              {
+                "group": "Reference",
+                "pages": [
+                  "en/reference/repl",
+                  "en/reference/configuration",
+                  "en/reference/architecture"
+                ]
+              }
             ]
           }
         ]
