@@ -24,6 +24,7 @@ export async function useConfig() {
   setHuggingfaceEnv(config.huggingface.env)
 
   return {
+    GLOBAL_CONFIG_PATH,
     config,
     setHuggingfaceEnv
   }

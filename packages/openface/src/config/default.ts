@@ -8,20 +8,12 @@ import type { TransformersEnvironment } from '.'
 
 export type Config = typeof config
 
-const cacheDir = resolve(os.homedir(), `.local/share/${name}/models`)
+const cacheDir = resolve(os.homedir(), `.local/share/${name}/models/`)
 export const config = {
-  $schema: "https://json-schema.org/draft/2020-12/schema",
-  ref: "Config",
-  type: "object",
-  properties: {
-    $schema: {
-      description: "JSON schema reference for configuration validation",
-      type: "string"
-    },
-  },
   huggingface: {
     env: defu({
       cacheDir,
+      localModelPath: cacheDir,
     } as TransformersEnvironment, env),
     pretrained: {
       model: {

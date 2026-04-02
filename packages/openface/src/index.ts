@@ -3,6 +3,7 @@ import { hideBin } from "yargs/helpers"
 import { TranslationCommand } from "./cli/commands/translation"
 import { PullCommand } from './cli/commands/pull'
 import { TextGenerationCommand } from './cli/commands/text-generation'
+import { ConfigCommand } from './cli/commands/config'
 
 const cli = yargs(hideBin(process.argv))
   .parserConfiguration({ "populate--": true })
@@ -13,6 +14,7 @@ const cli = yargs(hideBin(process.argv))
   .command(TranslationCommand)
   .command(TextGenerationCommand)
   .command(PullCommand)
+  .command(ConfigCommand)
   .fail((msg, err) => {
     if (
       msg?.startsWith("Unknown argument") ||
