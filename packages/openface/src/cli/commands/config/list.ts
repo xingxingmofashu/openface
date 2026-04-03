@@ -6,7 +6,7 @@ import { log, intro, outro } from '@clack/prompts'
 export const ConfigListCommand = cmd({
   command: 'list',
   aliases: ["ls"],
-  describe: "list config",
+  describe: "List all configuration settings",
   async handler() {
     const { GLOBAL_CONFIG_PATH, config } = await useConfig()
     intro(`Configurations ${UI.Style.TEXT_DIM}${GLOBAL_CONFIG_PATH}`)

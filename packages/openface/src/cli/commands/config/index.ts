@@ -4,7 +4,7 @@ import { ConfigListCommand } from "./list";
 
 export const ConfigCommand = cmd({
   command: "config",
-  describe: "",
+  describe: "Manage configuration settings",
   builder: (yargs) =>
     yargs
       .command(ConfigListCommand)
