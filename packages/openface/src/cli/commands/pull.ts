@@ -2,7 +2,7 @@ import { cmd } from "../utils/cmd"
 import { pull } from "../../tasks/pull"
 import { SUPPORTED_TASKS } from "../../tasks/pull/tasks"
 import type { SUPPORTED_TASKS_TYPES } from "../../tasks/pull/tasks"
-import consola from "consola"
+import { log, progress } from "@clack/prompts"
 
 export const PullCommand = cmd({
   command: "pull",
@@ -11,28 +11,36 @@ export const PullCommand = cmd({
     yargs
       .option("model", {
         type: "string",
-        alias:'m',
+        alias: "m",
         describe: "Model repository ID",
-        demandOption: true
+        demandOption: true,
       })
       .option("task", {
         type: "string",
-        alias:'t',
+        alias: "t",
         describe: "Task type",
         choices: Object.keys(SUPPORTED_TASKS),
-        demandOption: true
+        demandOption: true,
       }),
   handler: async (args) => {
     const { model, task } = args as { model: string; task: SUPPORTED_TASKS_TYPES }
 
-    try {
-      consola.start(`Pulling model '${model}' for task '${task}'...`)
-      await pull(task, model)
-      consola.success(`Model '${model}' pulled successfully!`)
+    const prog = progress({
+      indicator: "dots",
+      style: "heavy",
+    })
 
+    try {
+      log.info(`Pulling model '${model}' for task '${task}'...`)
+      prog.start(`Downloading`)
+      await pull(task, model,{
+        progress_callback:(info)=>{
+        }
+      })
+      prog.stop(`Model '${model}' pulled successfully!`)
     } catch (error) {
-      consola.error("Failed to pull model:", error instanceof Error ? error.message : String(error))
+      prog.error(`Failed to pull model: ${error instanceof Error ? error.message : String(error)}`)
       process.exit(1)
     }
-  }
+  },
 })

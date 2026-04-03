@@ -5,7 +5,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "bun run --conditions=browser ./src/index.ts"
+    "dev": "bun run --conditions=browser ./src/index.ts",
+    "typecheck": "bunx tsc --noEmit"
   },
   "dependencies": {
     "@clack/prompts": "^1.2.0",

@@ -3,7 +3,7 @@ import { cmd } from "../../utils/cmd"
 import { rm } from "node:fs/promises"
 import { intro, outro, tasks, type Task } from "@clack/prompts"
 import { join } from "node:path"
-import { useLanguageModelSchema } from "../../utils/schems"
+import { useLanguageModelSchema } from "../../utils/schemas"
 
 export const ModelRemoveCommand = cmd({
   command: "remove [modelId...]",
