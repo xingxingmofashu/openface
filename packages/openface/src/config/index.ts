@@ -19,19 +19,27 @@ export async function useConfig() {
 
   const modelFile = await Bun.file(GLOBAL_MODEL_CONFIG_PATH)
   if (!(await modelFile.exists())) {
-    await modelFile.write(JSON.stringify({}))
+    await modelFile.write(
+      JSON.stringify(
+        {
+          provider: {},
+        },
+        null,
+        2,
+      ),
+    )
   }
 
   const config = defu((await Bun.file(GLOBAL_CONFIG_PATH).json()) as Config, defaultConfig)
   Object.assign(env, config.huggingface.env)
 
-  async function setConfig(options: Record<string, any>) {
-    await file.write(JSON.stringify(options, null, 2))
-  }
-
   return {
     GLOBAL_CONFIG_PATH,
+    GLOBAL_MODEL_CONFIG_PATH,
     config,
-    setConfig,
+    file: {
+      config: file,
+      model: modelFile,
+    },
   }
 }

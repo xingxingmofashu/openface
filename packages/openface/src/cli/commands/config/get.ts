@@ -9,7 +9,7 @@ export const ConfigGetCommand = cmd({
   builder: (yargs) =>
     yargs.positional("name", {
       type: "string",
-      description: "",
+      description: "Configuration name",
       demandOption: true,
     }),
   async handler(args) {

@@ -48,317 +48,216 @@ import {
   ZeroShotAudioClassificationPipeline,
   ZeroShotClassificationPipeline,
   ZeroShotImageClassificationPipeline,
-  ZeroShotObjectDetectionPipeline
-} from "@huggingface/transformers";
+  ZeroShotObjectDetectionPipeline,
+} from "@huggingface/transformers"
 
 
-// TODO: Add types for TASK_ALIASES
-export const TASK_ALIASES = {
-  "sentiment-analysis": "text-classification",
-  "ner": "token-classification",
-  // "vqa": "visual-question-answering", // TODO: Add
-  "asr": "automatic-speech-recognition",
-  "text-to-speech": "text-to-audio",
-
-  // Add for backwards compatibility
-  "embeddings": "feature-extraction",
-} as const
-
-
-export const SUPPORTED_TASKS = {
+export const SUPPORTED_TASKS = Object.freeze({
   "text-classification": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": TextClassificationPipeline,
-    "model": AutoModelForSequenceClassification,
-    "default": {
-      // TODO: replace with original
-      // "model": "distilbert-base-uncased-finetuned-sst-2-english",
-      "model": "Xenova/distilbert-base-uncased-finetuned-sst-2-english",
+    pipeline: TextClassificationPipeline,
+    model: AutoModelForSequenceClassification,
+    default: {
+      model: "Xenova/distilbert-base-uncased-finetuned-sst-2-english",
     },
-    "type": "text",
+    type: "text",
   },
   "token-classification": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": TokenClassificationPipeline,
-    "model": AutoModelForTokenClassification,
-    "default": {
-      // TODO: replace with original
-      // "model": "Davlan/bert-base-multilingual-cased-ner-hrl",
-      "model": "Xenova/bert-base-multilingual-cased-ner-hrl",
+    pipeline: TokenClassificationPipeline,
+    model: AutoModelForTokenClassification,
+    default: {
+      model: "Xenova/bert-base-multilingual-cased-ner-hrl",
     },
-    "type": "text",
+    type: "text",
   },
   "question-answering": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": QuestionAnsweringPipeline,
-    "model": AutoModelForQuestionAnswering,
-    "default": {
-      // TODO: replace with original
-      // "model": "distilbert-base-cased-distilled-squad",
-      "model": "Xenova/distilbert-base-cased-distilled-squad",
+    pipeline: QuestionAnsweringPipeline,
+    model: AutoModelForQuestionAnswering,
+    default: {
+      model: "Xenova/distilbert-base-cased-distilled-squad",
     },
-    "type": "text",
+    type: "text",
   },
-
   "fill-mask": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": FillMaskPipeline,
-    "model": AutoModelForMaskedLM,
-    "default": {
-      // TODO: replace with original
-      // "model": "bert-base-uncased",
-      "model": "Xenova/bert-base-uncased",
+    pipeline: FillMaskPipeline,
+    model: AutoModelForMaskedLM,
+    default: {
+      model: "onnx-community/ettin-encoder-32m-ONNX",
+      dtype: "fp32",
     },
-    "type": "text",
+    type: "text",
   },
-  "summarization": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": SummarizationPipeline,
-    "model": AutoModelForSeq2SeqLM,
-    "default": {
-      // TODO: replace with original
-      // "model": "sshleifer/distilbart-cnn-6-6",
-      "model": "Xenova/distilbart-cnn-6-6",
+  summarization: {
+    pipeline: SummarizationPipeline,
+    model: AutoModelForSeq2SeqLM,
+    default: {
+      model: "Xenova/distilbart-cnn-6-6",
     },
-    "type": "text",
+    type: "text",
   },
-  "translation": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": TranslationPipeline,
-    "model": AutoModelForSeq2SeqLM,
-    "default": {
-      // TODO: replace with original
-      // "model": "t5-small",
-      "model": "Xenova/t5-small",
+  translation: {
+    pipeline: TranslationPipeline,
+    model: AutoModelForSeq2SeqLM,
+    default: {
+      model: "Xenova/t5-small",
     },
-    "type": "text",
+    type: "text",
   },
   "text2text-generation": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": Text2TextGenerationPipeline,
-    "model": AutoModelForSeq2SeqLM,
-    "default": {
-      // TODO: replace with original
-      // "model": "google/flan-t5-small",
-      "model": "Xenova/flan-t5-small",
+    pipeline: Text2TextGenerationPipeline,
+    model: AutoModelForSeq2SeqLM,
+    default: {
+      model: "Xenova/flan-t5-small",
     },
-    "type": "text",
+    type: "text",
   },
   "text-generation": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": TextGenerationPipeline,
-    "model": AutoModelForCausalLM,
-    "default": {
-      // TODO: replace with original
-      // "model": "gpt2",
-      "model": "Xenova/gpt2",
+    pipeline: TextGenerationPipeline,
+    model: AutoModelForCausalLM,
+    default: {
+      model: "onnx-community/Qwen3-0.6B-ONNX",
+      dtype: "q4",
     },
-    "type": "text",
+    type: "text",
   },
   "zero-shot-classification": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": ZeroShotClassificationPipeline,
-    "model": AutoModelForSequenceClassification,
-    "default": {
-      // TODO: replace with original
-      // "model": "typeform/distilbert-base-uncased-mnli",
-      "model": "Xenova/distilbert-base-uncased-mnli",
+    pipeline: ZeroShotClassificationPipeline,
+    model: AutoModelForSequenceClassification,
+    default: {
+      model: "Xenova/distilbert-base-uncased-mnli",
     },
-    "type": "text",
+    type: "text",
   },
   "audio-classification": {
-    "pipeline": AudioClassificationPipeline,
-    "model": AutoModelForAudioClassification,
-    "processor": AutoProcessor,
-    "default": {
-      // TODO: replace with original
-      // "model": "superb/wav2vec2-base-superb-ks",
-      "model": "Xenova/wav2vec2-base-superb-ks",
+    pipeline: AudioClassificationPipeline,
+    model: AutoModelForAudioClassification,
+    default: {
+      model: "Xenova/wav2vec2-base-superb-ks",
     },
-    "type": "audio",
+    type: "audio",
   },
   "zero-shot-audio-classification": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": ZeroShotAudioClassificationPipeline,
-    "model": AutoModel,
-    "processor": AutoProcessor,
-    "default": {
-      // TODO: replace with original
-      // "model": "laion/clap-htsat-fused",
-      "model": "Xenova/clap-htsat-unfused",
+    pipeline: ZeroShotAudioClassificationPipeline,
+    model: AutoModel,
+    default: {
+      model: "Xenova/clap-htsat-unfused",
     },
-    "type": "multimodal",
+    type: "multimodal",
   },
   "automatic-speech-recognition": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": AutomaticSpeechRecognitionPipeline,
-    "model": [AutoModelForSpeechSeq2Seq, AutoModelForCTC],
-    "processor": AutoProcessor,
-    "default": {
-      // TODO: replace with original
-      // "model": "openai/whisper-tiny.en",
-      "model": "Xenova/whisper-tiny.en",
+    pipeline: AutomaticSpeechRecognitionPipeline,
+    model: [AutoModelForSpeechSeq2Seq, AutoModelForCTC],
+    default: {
+      model: "Xenova/whisper-tiny.en",
     },
-    "type": "multimodal",
+    type: "multimodal",
   },
   "text-to-audio": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": TextToAudioPipeline,
-    "model": [AutoModelForTextToWaveform, AutoModelForTextToSpectrogram],
-    "processor": [AutoProcessor, /* Some don't use a processor */ null],
-    "default": {
-      // TODO: replace with original
-      // "model": "microsoft/speecht5_tts",
-      "model": "Xenova/speecht5_tts",
+    pipeline: TextToAudioPipeline,
+    model: [AutoModelForTextToWaveform, AutoModelForTextToSpectrogram],
+    default: {
+      model: "onnx-community/Supertonic-TTS-ONNX",
+      dtype: "fp32",
     },
-    "type": "text",
+    type: "text",
   },
   "image-to-text": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": ImageToTextPipeline,
-    "model": AutoModelForVision2Seq,
-    "processor": AutoProcessor,
-    "default": {
-      // TODO: replace with original
-      // "model": "nlpconnect/vit-gpt2-image-captioning",
-      "model": "Xenova/vit-gpt2-image-captioning",
+    pipeline: ImageToTextPipeline,
+    model: AutoModelForVision2Seq,
+    default: {
+      model: "Xenova/vit-gpt2-image-captioning",
     },
-    "type": "multimodal",
+    type: "multimodal",
   },
-
   "image-classification": {
-    // no tokenizer
-    "pipeline": ImageClassificationPipeline,
-    "model": AutoModelForImageClassification,
-    "processor": AutoProcessor,
-    "default": {
-      // TODO: replace with original
-      // "model": "google/vit-base-patch16-224",
-      "model": "Xenova/vit-base-patch16-224",
+    pipeline: ImageClassificationPipeline,
+    model: AutoModelForImageClassification,
+    default: {
+      model: "Xenova/vit-base-patch16-224",
     },
-    "type": "multimodal",
+    type: "multimodal",
   },
-
   "image-segmentation": {
-    // no tokenizer
-    "pipeline": ImageSegmentationPipeline,
-    "model": [AutoModelForImageSegmentation, AutoModelForSemanticSegmentation, AutoModelForUniversalSegmentation],
-    "processor": AutoProcessor,
-    "default": {
-      // TODO: replace with original
-      // "model": "facebook/detr-resnet-50-panoptic",
-      "model": "Xenova/detr-resnet-50-panoptic",
+    pipeline: ImageSegmentationPipeline,
+    model: [AutoModelForImageSegmentation, AutoModelForSemanticSegmentation, AutoModelForUniversalSegmentation],
+    default: {
+      model: "Xenova/detr-resnet-50-panoptic",
     },
-    "type": "multimodal",
+    type: "multimodal",
   },
   "background-removal": {
-    // no tokenizer
-    "pipeline": BackgroundRemovalPipeline,
-    "model": [AutoModelForImageSegmentation, AutoModelForSemanticSegmentation, AutoModelForUniversalSegmentation],
-    "processor": AutoProcessor,
-    "default": {
-      "model": "Xenova/modnet",
+    pipeline: BackgroundRemovalPipeline,
+    model: [AutoModelForImageSegmentation, AutoModelForSemanticSegmentation, AutoModelForUniversalSegmentation],
+    default: {
+      model: "Xenova/modnet",
     },
-    "type": "image",
+    type: "image",
   },
-
   "zero-shot-image-classification": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": ZeroShotImageClassificationPipeline,
-    "model": AutoModel,
-    "processor": AutoProcessor,
-    "default": {
-      // TODO: replace with original
-      // "model": "openai/clip-vit-base-patch32",
-      "model": "Xenova/clip-vit-base-patch32",
+    pipeline: ZeroShotImageClassificationPipeline,
+    model: AutoModel,
+    default: {
+      model: "Xenova/clip-vit-base-patch32",
     },
-    "type": "multimodal",
+    type: "multimodal",
   },
-
   "object-detection": {
-    // no tokenizer
-    "pipeline": ObjectDetectionPipeline,
-    "model": AutoModelForObjectDetection,
-    "processor": AutoProcessor,
-    "default": {
-      // TODO: replace with original
-      // "model": "facebook/detr-resnet-50",
-      "model": "Xenova/detr-resnet-50",
+    pipeline: ObjectDetectionPipeline,
+    model: AutoModelForObjectDetection,
+    default: {
+      model: "Xenova/detr-resnet-50",
     },
-    "type": "multimodal",
+    type: "multimodal",
   },
   "zero-shot-object-detection": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": ZeroShotObjectDetectionPipeline,
-    "model": AutoModelForZeroShotObjectDetection,
-    "processor": AutoProcessor,
-    "default": {
-      // TODO: replace with original
-      // "model": "google/owlvit-base-patch32",
-      "model": "Xenova/owlvit-base-patch32",
+    pipeline: ZeroShotObjectDetectionPipeline,
+    model: AutoModelForZeroShotObjectDetection,
+    default: {
+      model: "Xenova/owlvit-base-patch32",
     },
-    "type": "multimodal",
+    type: "multimodal",
   },
   "document-question-answering": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": DocumentQuestionAnsweringPipeline,
-    "model": AutoModelForDocumentQuestionAnswering,
-    "processor": AutoProcessor,
-    "default": {
-      // TODO: replace with original
-      // "model": "naver-clova-ix/donut-base-finetuned-docvqa",
-      "model": "Xenova/donut-base-finetuned-docvqa",
+    pipeline: DocumentQuestionAnsweringPipeline,
+    model: AutoModelForDocumentQuestionAnswering,
+    default: {
+      model: "Xenova/donut-base-finetuned-docvqa",
     },
-    "type": "multimodal",
+    type: "multimodal",
   },
   "image-to-image": {
-    // no tokenizer
-    "pipeline": ImageToImagePipeline,
-    "model": AutoModelForImageToImage,
-    "processor": AutoProcessor,
-    "default": {
-      // TODO: replace with original
-      // "model": "caidas/swin2SR-classical-sr-x2-64",
-      "model": "Xenova/swin2SR-classical-sr-x2-64",
+    pipeline: ImageToImagePipeline,
+    model: AutoModelForImageToImage,
+    default: {
+      model: "Xenova/swin2SR-classical-sr-x2-64",
     },
-    "type": "image",
+    type: "image",
   },
   "depth-estimation": {
-    // no tokenizer
-    "pipeline": DepthEstimationPipeline,
-    "model": AutoModelForDepthEstimation,
-    "processor": AutoProcessor,
-    "default": {
-      // TODO: replace with original
-      // "model": "Intel/dpt-large",
-      "model": "Xenova/dpt-large",
+    pipeline: DepthEstimationPipeline,
+    model: AutoModelForDepthEstimation,
+    default: {
+      model: "onnx-community/depth-anything-v2-small",
     },
-    "type": "image",
+    type: "image",
   },
-
-  // This task serves as a useful interface for dealing with sentence-transformers (https://huggingface.co/sentence-transformers).
   "feature-extraction": {
-    "tokenizer": AutoTokenizer,
-    "pipeline": FeatureExtractionPipeline,
-    "model": AutoModel,
-    "default": {
-      // TODO: replace with original
-      // "model": "sentence-transformers/all-MiniLM-L6-v2",
-      "model": "Xenova/all-MiniLM-L6-v2",
+    pipeline: FeatureExtractionPipeline,
+    model: AutoModel,
+    default: {
+      model: "onnx-community/all-MiniLM-L6-v2-ONNX",
+      dtype: "fp32",
     },
-    "type": "text",
+    type: "text",
   },
   "image-feature-extraction": {
-    "processor": AutoProcessor,
-    "pipeline": ImageFeatureExtractionPipeline,
-    "model": [AutoModelForImageFeatureExtraction, AutoModel],
-    "default": {
-      // TODO: replace with original
-      // "model": "google/vit-base-patch16-224",
-      "model": "Xenova/vit-base-patch16-224-in21k",
+    pipeline: ImageFeatureExtractionPipeline,
+    model: [AutoModelForImageFeatureExtraction, AutoModel],
+    default: {
+      model: "onnx-community/dinov3-vits16-pretrain-lvd1689m-ONNX",
+      dtype: "fp32",
     },
-    "type": "image",
+    type: "image",
   },
-} as const
+})
 
-export type SUPPORTED_TASKS_TYPES =  keyof typeof SUPPORTED_TASKS
+export type SUPPORTED_TASKS_TYPES = keyof typeof SUPPORTED_TASKS
