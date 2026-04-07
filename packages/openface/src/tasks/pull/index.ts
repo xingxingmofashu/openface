@@ -25,7 +25,7 @@ export async function pull(modelId: string, opts: PretrainedModelOptions = {}) {
   }
   const [provider, name] = modelId.split("/") as [string, string]
 
-  const model = await modelInfo({ name: modelId, additionalFields: ["tags"] })
+  const model = await modelInfo({ name: modelId })
   const task = model.task as TaskType
   if (!task) {
     throw new Error(`Cannot detect task type for model '${modelId}'`)

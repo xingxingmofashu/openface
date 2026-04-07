@@ -1,9 +1,9 @@
 import { useConfig } from "../../../config"
 import { cmd } from "../../utils/cmd"
-import { rm } from "node:fs/promises"
-import { intro, log, outro, tasks, type Task } from "@clack/prompts"
+import { rm, exists } from "node:fs/promises"
+import { intro, log, outro, tasks, type Task, spinner as createSpinner } from "@clack/prompts"
 import { join } from "node:path"
-import { useLanguageModelSchema } from "../../utils/schemas"
+import { UI } from "../../utils/ui"
 
 export const ModelRemoveCommand = cmd({
   command: "remove [modelId...]",
@@ -17,26 +17,28 @@ export const ModelRemoveCommand = cmd({
       demandOption: true,
     }),
   async handler(args) {
-    const { config } = await useConfig()
+    const { config, file } = await useConfig()
     const cacheDir = config.huggingface.env.cacheDir
-    if(!cacheDir) {
+    if (!cacheDir) {
       log.error("Cache directory is not configured.")
-      process.exit(1)
+      return
     }
-    const rmTasks = Promise.all(
-      args.modelId.map<Promise<Task>>(async (model) => {
-        const { provider, modelId } = await useLanguageModelSchema().parseAsync(model)
-        return {
-          title: `Remove ${provider}/${modelId}`,
-          task: async () => {
-            await rm(join(cacheDir, provider, modelId), { recursive: true, force: true })
-          },
-        }
-      }),
-    )
-    
+
     intro(`Removing model(s)...`)
-    await tasks(await rmTasks)
+    for (const model of args.modelId) {
+      const [provider, modelId] = model.split("/") as [string, string]
+      const modelPath = join(cacheDir, provider, modelId)
+      const dirExists = await exists(modelPath)
+      if (!dirExists) {
+        log.error(`Model ${UI.Style.TEXT_DANGER_BOLD}${provider}/${modelId}\x1b[0m not found in cache.`)
+        continue
+      }
+      await rm(modelPath, { recursive: true, force: true })
+      const modelConfig = await file.model.json()
+      delete modelConfig["provider"][provider]["models"][modelId]
+      await file.model.write(JSON.stringify(modelConfig, null, 2))
+      log.success(`Removed model ${UI.Style.TEXT_SUCCESS_BOLD}${provider}/${modelId}\x1b[0m from cache.`)
+    }
     outro(`Model(s) removed from cache successfully`)
   },
 })
