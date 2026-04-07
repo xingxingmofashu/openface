@@ -1,8 +1,7 @@
-import { cmd } from "../utils/cmd";
+import { cmd } from "../utils/cmd"
 import { useTranslation } from "../../tasks/translation"
-import { TranslationLanguages } from '../../tasks/translation/languages'
-import { TextStreamer, type TranslationOutput } from "@huggingface/transformers";
-import { createRepl } from "../utils/createRepl";
+import { TextStreamer } from "@huggingface/transformers"
+import { createRepl } from "../utils/createRepl"
 
 export const TranslationCommand = cmd({
   command: "translation",
@@ -10,48 +9,41 @@ export const TranslationCommand = cmd({
   builder: (yargs) =>
     yargs
       .option("model", {
-        alias: 'm',
+        alias: "m",
         type: "string",
         describe: "Model repository ID",
-        demandOption: true
+        demandOption: true,
       })
       .option("stream", {
         type: "boolean",
         alias: "s",
         describe: "Enable streaming output",
-        default: false
-      })
-      .option("src_lang", {
-        alias: 's',
-        type: "string",
-        describe: "Source language code",
-        default: "zho_Hans"
-      })
-      .option("tgt_lang", {
-        alias: 't',
-        type: "string",
-        describe: "Target language code",
-        default: "eng_Latn"
+        default: true,
       }),
   handler: async (args) => {
     const { translator, tokenizer } = await useTranslation(args.model)
-    const streamer = args.stream ? new TextStreamer(tokenizer, {
-      skip_prompt: true
-    }) : undefined
+    const streamer = args.stream
+      ? new TextStreamer(tokenizer, {
+          skip_prompt: true,
+        })
+      : undefined
 
-    const repl = await createRepl({
-      input: process.stdin,
-      output: process.stdout,
-      stream: args.stream,
-    }, async (input) => {
+    const handler = async (input: string) => {
       const output = await translator(input, {
-        src_lang: args.src_lang as TranslationLanguages.LanguageCode,
-        tgt_lang: args.tgt_lang as TranslationLanguages.LanguageCode,
         streamer,
       })
-      return (output as TranslationOutput).at(-1)?.translation_text
-    })
+      return output.at(-1)?.translation_text
+    }
+
+    const repl = await createRepl(
+      {
+        input: process.stdin,
+        output: process.stdout,
+        stream: args.stream,
+      },
+      handler,
+    )
 
     repl.close()
-  }
+  },
 })

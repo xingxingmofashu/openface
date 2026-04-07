@@ -1,6 +1,6 @@
 import { useTextGeneration } from "../../tasks/text-generation"
 import { cmd } from "../utils/cmd"
-import { TextStreamer, type Chat, type Message, type TextGenerationOutput } from "@huggingface/transformers"
+import { TextStreamer } from "@huggingface/transformers"
 import { createRepl } from "../utils/createRepl"
 
 export const TextGenerationCommand = cmd({
@@ -12,40 +12,41 @@ export const TextGenerationCommand = cmd({
         type: "string",
         alias: "m",
         describe: "Model repository ID",
-        demandOption: true
+        demandOption: true,
       })
       .option("stream", {
         type: "boolean",
         alias: "s",
         describe: "Enable streaming output",
-        default: false
+        default: true,
       }),
   handler: async (args) => {
     const { generator, tokenizer } = await useTextGeneration(args.model)
-    const messages: Chat = []
-    const streamer = args.stream ? new TextStreamer(tokenizer, {
-      skip_prompt: true
-    }) : undefined
-    const repl = await createRepl({
-      input: process.stdin,
-      output: process.stdout,
-      stream:args.stream
-    }, async (input) => {
-      if (input) {
-        messages.push({
-          role: 'user',
-          content: input
+
+    const streamer = args.stream
+      ? new TextStreamer(tokenizer, {
+          skip_prompt: true,
         })
-        const output = await generator(messages, {
+      : undefined
+
+    const handler = async (input: string) => {
+      if (input) {
+        const output = await generator(input, {
           streamer,
         })
-        if (output) {
-          messages.push((output as TextGenerationOutput).at(0)?.generated_text.at(-1) as Message)
-        }
-        return messages.at(-1)?.content
+        return output[0]?.generated_text
       }
-    })
+    }
+
+    const repl = await createRepl(
+      {
+        input: process.stdin,
+        output: process.stdout,
+        stream: args.stream,
+      },
+      handler,
+    )
 
     repl.close()
-  }
+  },
 })

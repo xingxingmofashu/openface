@@ -23,7 +23,7 @@ export async function useConfig() {
   }
 
   const config = defu((await Bun.file(GLOBAL_CONFIG_PATH).json()) as Config, defaultConfig)
-  Object.assign(env, config.huggingface)
+  Object.assign(env, config.huggingface.env)
 
   async function setConfig(options: Record<string, any>) {
     await file.write(JSON.stringify(options, null, 2))

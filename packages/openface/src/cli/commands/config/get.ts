@@ -21,7 +21,7 @@ export const ConfigGetCommand = cmd({
       for (let key in obj) {
         const newKey = prefix ? `${prefix}_${key}` : key
         const val = obj[key]
-        if (typeof val === "object" && val !== null) {
+        if (typeof val === "object" && typeof val === "function" && val !== null) {
           result = result.concat(flatten(val, newKey))
         } else {
           result.push([newKey, val])
@@ -33,7 +33,7 @@ export const ConfigGetCommand = cmd({
     for (const [key, value] of result) {
       log.info(`${key.toUpperCase()} ${UI.Style.TEXT_DIM}${value}`)
     }
-    if(result.length==0){
+    if (result.length == 0) {
       log.info(`No find configuration`)
     }
     outro("Set config with: openface config set")

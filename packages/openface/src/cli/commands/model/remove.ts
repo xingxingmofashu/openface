@@ -1,7 +1,7 @@
 import { useConfig } from "../../../config"
 import { cmd } from "../../utils/cmd"
 import { rm } from "node:fs/promises"
-import { intro, outro, tasks, type Task } from "@clack/prompts"
+import { intro, log, outro, tasks, type Task } from "@clack/prompts"
 import { join } from "node:path"
 import { useLanguageModelSchema } from "../../utils/schemas"
 
@@ -19,6 +19,10 @@ export const ModelRemoveCommand = cmd({
   async handler(args) {
     const { config } = await useConfig()
     const cacheDir = config.huggingface.env.cacheDir
+    if(!cacheDir) {
+      log.error("Cache directory is not configured.")
+      process.exit(1)
+    }
     const rmTasks = Promise.all(
       args.modelId.map<Promise<Task>>(async (model) => {
         const { provider, modelId } = await useLanguageModelSchema().parseAsync(model)

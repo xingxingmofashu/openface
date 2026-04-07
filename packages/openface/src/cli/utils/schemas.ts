@@ -25,6 +25,7 @@ export function useLanguageModelSchema() {
       async (value) => {
         const { config } = await useConfig()
         const cacheDir = config.huggingface.env.cacheDir
+        if(!cacheDir) return false
 
         const [provider, model] = value.split("/") as [string, string]
         const providerDirents = await readdir(cacheDir, { withFileTypes: true })

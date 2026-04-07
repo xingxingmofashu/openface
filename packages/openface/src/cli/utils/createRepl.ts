@@ -1,6 +1,6 @@
 import { createInterface, type ReadLineOptions } from 'node:readline/promises'
-import consola from 'consola'
 import clipboardy from 'clipboardy'
+import { log } from '@clack/prompts'
 
 export interface CreateReplOptions extends ReadLineOptions {
   stream?: boolean
@@ -45,7 +45,7 @@ export async function createRepl(options: CreateReplOptions, callback?: (input: 
           console.log(`\x1b[90mCopied ${output.length} characters to clipboard\x1b[0m`)
         }
       } catch (error) {
-        consola.error(`Failed to copy:${error}`)
+        log.error(`Failed to copy:${error}`)
       }
       continue
     }

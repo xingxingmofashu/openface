@@ -12,6 +12,10 @@ export const ModelListCommand = cmd({
   async handler() {
     const { config } = await useConfig()
     const cacheDir = config.huggingface.env.cacheDir
+    if(!cacheDir) {
+      log.error("Cache directory is not configured.")
+      process.exit(1)
+    }
     const result: Array<{ provider: string; model: { id: string; name: string } }> = []
     const providers = await readdir(cacheDir, { withFileTypes: true })
 

@@ -1,30 +1,29 @@
 import { pipeline } from "@huggingface/transformers"
-import type { PretrainedModelOptions, TextGenerationConfig } from "@huggingface/transformers"
-import { TranslationLanguages } from "./languages"
+import type { PretrainedModelOptions } from "@huggingface/transformers"
 import { defu } from "defu"
 import { useConfig } from "../../config"
 
-const { config: { huggingface: { pretrained } } } = await useConfig()
+const {
+  config: {
+    huggingface: { pretrained },
+  },
+} = await useConfig()
 
-export interface TranslationConfig extends Partial<TextGenerationConfig> {
-  src_lang?: TranslationLanguages.LanguageCode
-  tgt_lang?: TranslationLanguages.LanguageCode
-}
+export type GenerationFunctionParameters = Record<string, any>
 
 export async function useTranslation(model?: string, opts?: PretrainedModelOptions) {
   const options = defu(opts, {
-    ...pretrained.model
+    ...pretrained.model,
   })
-  const pipe = await pipeline<'translation'>('translation', model, options)
+  const pipe = await pipeline<"translation">("translation", model, options)
 
-  function translator(texts: string | string[], config?: TranslationConfig) {
-    // @ts-ignore
-    return pipe(texts, config);
+  function translator(texts: string | string[], config?: GenerationFunctionParameters) {
+    return pipe(texts, config)
   }
 
   return {
     options,
     ...pipe,
-    translator
+    translator,
   }
 }
