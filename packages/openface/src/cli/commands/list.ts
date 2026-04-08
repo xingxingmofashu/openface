@@ -11,16 +11,15 @@ export const ListCommand = cmd({
   aliases: ["ls"],
   async handler() {
     const { config } = await useConfig()
-    const cacheDir = config.huggingface.env.cacheDir
-    if(!cacheDir) {
+    if(!config.CACHE_DIR) {
       log.error("Cache directory is not configured.")
       process.exit(1)
     }
     const result: Array<{ provider: string; model: { id: string; name: string } }> = []
-    const providers = await readdir(cacheDir, { withFileTypes: true })
+    const providers = await readdir(config.CACHE_DIR, { withFileTypes: true })
 
     for await (const provider of providers.filter((p) => p.isDirectory()).map((p) => p.name)) {
-      const models = await readdir(join(cacheDir, provider), { withFileTypes: true })
+      const models = await readdir(join(config.CACHE_DIR, provider), { withFileTypes: true })
       result.push(
         ...models
           .filter((m) => m.isDirectory())
@@ -28,7 +27,7 @@ export const ListCommand = cmd({
       )
     }
 
-    intro(`Models ${UI.Style.TEXT_DIM}${cacheDir}`)
+    intro(`Models ${UI.Style.TEXT_DIM}${config.CACHE_DIR}`)
     for (const { provider, model } of result) {
       log.info(`${model.name} ${UI.Style.TEXT_DIM}${provider}`)
     }

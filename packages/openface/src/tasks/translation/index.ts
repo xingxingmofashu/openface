@@ -4,16 +4,14 @@ import { defu } from "defu"
 import { useConfig } from "../../config"
 
 const {
-  config: {
-    huggingface: { pretrained },
-  },
+  config
 } = await useConfig()
 
 export type GenerationFunctionParameters = Record<string, any>
 
 export async function useTranslation(model?: string, opts?: PretrainedModelOptions) {
   const options = defu(opts, {
-    ...pretrained.model,
+    cache_dir: config.CACHE_DIR,
   })
   const pipe = await pipeline<"translation">("translation", model, options)
 

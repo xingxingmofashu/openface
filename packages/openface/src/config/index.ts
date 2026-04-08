@@ -2,32 +2,52 @@ import os from "node:os"
 import { resolve } from "node:path"
 import Bun from "bun"
 import { name } from "../../package.json"
-import { env } from "@huggingface/transformers"
+import { env, LogLevel } from "@huggingface/transformers"
 import { defu } from "defu"
-import { config as defaultConfig, type Config } from "./default"
+import { config as defaultConfig } from "./default"
 import type { ModelEntry } from "@huggingface/hub"
 
-export type TransformersEnvironment = typeof env
+export interface Config {
+  CONFIG_PATH: string
+  MODEL_CONFIG_PATH: string
+  LOG_LEVEL: typeof LogLevel
+  REMOTE_HOST: string
+  CACHE_KEY: string
+  CACHE_DIR: string
+  LOCAL_MODEL_PATH: string
+  REMOTE_PATH_TEMPLATE: string
+  ALLOW_LOCAL_MODELS: boolean
+  ALLOW_REMOTE_MODELS: boolean
+}
 
 export async function useConfig() {
-  const GLOBAL_CONFIG_PATH = resolve(os.homedir(), ".config", name, `config.json`)
-  const GLOBAL_MODEL_CONFIG_PATH = resolve(os.homedir(), ".config", name, `model.json`)
+  const CONFIG_PATH = resolve(os.homedir(), ".config", name, `config.json`)
+  const MODEL_CONFIG_PATH = resolve(os.homedir(), ".config", name, `model.json`)
 
-  const file = await Bun.file(GLOBAL_CONFIG_PATH)
+  const file = await Bun.file(CONFIG_PATH)
   if (!(await file.exists())) {
     await file.write(JSON.stringify({}))
   }
 
-  const modelFile = await Bun.file(GLOBAL_MODEL_CONFIG_PATH)
+  const modelFile = await Bun.file(MODEL_CONFIG_PATH)
   if (!(await modelFile.exists())) {
     const initModelConfig = {
       provider: {},
     }
     await modelFile.write(JSON.stringify(initModelConfig, null, 2))
   }
+  const config = defu<Config, [typeof defaultConfig]>(await Bun.file(CONFIG_PATH).json(), defaultConfig)
 
-  const config = defu((await Bun.file(GLOBAL_CONFIG_PATH).json()) as Config, defaultConfig)
-  Object.assign(env, config.huggingface.env)
+  Object.assign(env, {
+    logLevel: config.LOG_LEVEL,
+    remoteHost: config.REMOTE_HOST,
+    cacheKey: config.CACHE_KEY,
+    cacheDir: config.CACHE_DIR,
+    localModelPath: config.LOCAL_MODEL_PATH,
+    remotePathTemplate: config.REMOTE_PATH_TEMPLATE,
+    allowLocalModels: config.ALLOW_LOCAL_MODELS,
+    allowRemoteModels: config.ALLOW_REMOTE_MODELS,
+  } as typeof env)
 
   function languageModel(modelId: string) {
     const [provider, model] = modelId.split("/") as [string, string]
@@ -72,8 +92,6 @@ export async function useConfig() {
   }
 
   return {
-    GLOBAL_CONFIG_PATH,
-    GLOBAL_MODEL_CONFIG_PATH,
     config,
     languageModel,
     exists,

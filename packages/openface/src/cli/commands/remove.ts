@@ -18,15 +18,14 @@ export const RemoveCommand = cmd({
     }),
   async handler(args) {
     const { config, removeModelInfo } = await useConfig()
-    const cacheDir = config.huggingface.env.cacheDir
-    if (!cacheDir) {
+    if (!config.CACHE_DIR) {
       log.error("Cache directory is not configured.")
       return
     }
 
     intro(`Removing model(s)...`)
     for (const modelId of args.modelId) {
-      const modelPath = join(cacheDir, modelId)
+      const modelPath = join(config.CACHE_DIR, modelId)
       const dirExists = await exists(modelPath)
       if (!dirExists) {
         log.error(`Model ${UI.Style.TEXT_DANGER_BOLD}${modelId}\x1b[0m not found in cache.`)

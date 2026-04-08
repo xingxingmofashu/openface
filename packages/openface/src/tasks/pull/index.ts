@@ -5,19 +5,14 @@ import {
   PreTrainedTokenizer,
   Processor,
 } from "@huggingface/transformers"
-import type { TaskType, PretrainedModelOptions, PretrainedTokenizerOptions } from "@huggingface/transformers"
+import type { TaskType, PretrainedModelOptions } from "@huggingface/transformers"
 import { SUPPORTED_TASKS } from "./tasks"
 import defu from "defu"
 import { useConfig } from "../../config"
 import { modelInfo, repoExists } from "@huggingface/hub"
 
 export async function pull(modelId: string, opts: PretrainedModelOptions = {}) {
-  const {
-    config: {
-      huggingface: { pretrained },
-    },
-    setModelInfo,
-  } = await useConfig()
+  const { config, setModelInfo } = await useConfig()
 
   const exists = await repoExists({ repo: modelId })
   if (!exists) {
@@ -30,17 +25,9 @@ export async function pull(modelId: string, opts: PretrainedModelOptions = {}) {
     throw new Error(`Cannot detect task type for model '${modelId}'`)
   }
 
-  const modelOptions = defu<PretrainedModelOptions, [PretrainedModelOptions]>(opts, {
-    ...pretrained.model,
-  } satisfies PretrainedModelOptions)
-
-  const tokenizerOptions = defu<PretrainedTokenizerOptions, [PretrainedTokenizerOptions]>(opts, {
-    ...pretrained.model,
-  } satisfies PretrainedTokenizerOptions)
-
-  const processorOptions = defu(opts, {
-    ...pretrained.model,
-  })
+  const modelOptions = defu(opts, { cache_dir: config.CACHE_DIR })
+  const tokenizerOptions = defu(opts, { cache_dir: config.CACHE_DIR })
+  const processorOptions = defu(opts, { cache_dir: config.CACHE_DIR })
 
   const promises: Promise<PreTrainedTokenizer | PreTrainedModel | Processor>[] = []
 
