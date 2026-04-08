@@ -65,7 +65,7 @@ export async function useConfig() {
 
   async function getModelInfo(modelId: string) {
     const { provider, model } = languageModel(modelId)
-    return (await modelFile.json())["provider"]?.[provider]?.["models"]?.[model]
+    return (await modelFile.json())["provider"]?.[provider]?.["models"]?.[model] as ModelEntry
   }
 
   async function setModelInfo(modelId: string, modelInfo: ModelEntry) {
