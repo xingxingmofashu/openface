@@ -1,8 +1,6 @@
 import yargs from 'yargs'
 import { hideBin } from "yargs/helpers"
-import { TranslationCommand } from "./cli/commands/translation"
 import { PullCommand } from './cli/commands/pull'
-import { TextGenerationCommand } from './cli/commands/text-generation'
 import { ConfigCommand } from './cli/commands/config'
 import { RunCommand } from './cli/commands/run'
 import { ListCommand } from './cli/commands/list'
@@ -14,8 +12,6 @@ const cli = yargs(hideBin(process.argv))
   .wrap(yargs().terminalWidth())
   .help("help", "show help")
   .alias("help", "h")
-  .command(TranslationCommand)
-  .command(TextGenerationCommand)
   .command(PullCommand)
   .command(ConfigCommand)
   .command(ListCommand)
