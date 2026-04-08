@@ -16,14 +16,13 @@ export async function pull(modelId: string, opts: PretrainedModelOptions = {}) {
     config: {
       huggingface: { pretrained },
     },
-    file,
+    setModelInfo,
   } = await useConfig()
 
   const exists = await repoExists({ repo: modelId })
   if (!exists) {
     throw new Error(`Model '${modelId}' does not exist on Hugging Face Hub`)
   }
-  const [provider, name] = modelId.split("/") as [string, string]
 
   const model = await modelInfo({ name: modelId })
   const task = model.task as TaskType
@@ -73,17 +72,5 @@ export async function pull(modelId: string, opts: PretrainedModelOptions = {}) {
 
   await Promise.all(promises)
 
-  const setModelConfig = {
-    provider: {
-      [provider]: {
-        models: {
-          [name]: {
-            ...model,
-          },
-        },
-      },
-    },
-  }
-
-  await file.model.write(JSON.stringify(defu(setModelConfig, await file.model.json()), null, 2))
+  await setModelInfo(modelId, model)
 }

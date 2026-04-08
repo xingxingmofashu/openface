@@ -17,7 +17,7 @@ export const RemoveCommand = cmd({
       demandOption: true,
     }),
   async handler(args) {
-    const { config, file } = await useConfig()
+    const { config, removeModelInfo } = await useConfig()
     const cacheDir = config.huggingface.env.cacheDir
     if (!cacheDir) {
       log.error("Cache directory is not configured.")
@@ -25,19 +25,17 @@ export const RemoveCommand = cmd({
     }
 
     intro(`Removing model(s)...`)
-    for (const model of args.modelId) {
-      const [provider, modelId] = model.split("/") as [string, string]
-      const modelPath = join(cacheDir, provider, modelId)
+    for (const modelId of args.modelId) {
+      const modelPath = join(cacheDir, modelId)
       const dirExists = await exists(modelPath)
       if (!dirExists) {
-        log.error(`Model ${UI.Style.TEXT_DANGER_BOLD}${provider}/${modelId}\x1b[0m not found in cache.`)
+        log.error(`Model ${UI.Style.TEXT_DANGER_BOLD}${modelId}\x1b[0m not found in cache.`)
         continue
       }
       await rm(modelPath, { recursive: true, force: true })
-      const modelConfig = await file.model.json()
-      delete modelConfig["provider"][provider]["models"][modelId]
-      await file.model.write(JSON.stringify(modelConfig, null, 2))
-      log.success(`Removed model ${UI.Style.TEXT_SUCCESS_BOLD}${provider}/${modelId}\x1b[0m from cache.`)
+
+      await removeModelInfo(modelId)
+      log.success(`Removed model ${UI.Style.TEXT_SUCCESS_BOLD}${modelId}\x1b[0m from cache.`)
     }
     outro(`Model(s) removed from cache successfully`)
   },
