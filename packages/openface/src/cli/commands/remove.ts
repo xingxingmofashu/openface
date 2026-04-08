@@ -1,11 +1,11 @@
-import { useConfig } from "../../../config"
-import { cmd } from "../../utils/cmd"
+import { useConfig } from "../../config"
+import { cmd } from "../utils/cmd"
 import { rm, exists } from "node:fs/promises"
 import { intro, log, outro, tasks, type Task, spinner as createSpinner } from "@clack/prompts"
 import { join } from "node:path"
-import { UI } from "../../utils/ui"
+import { UI } from "../utils/ui"
 
-export const ModelRemoveCommand = cmd({
+export const RemoveCommand = cmd({
   command: "remove [modelId...]",
   describe: "Remove downloaded language models from local cache",
   aliases: ["rm"],

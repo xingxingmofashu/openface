@@ -1,13 +1,13 @@
 import { intro, log, outro } from "@clack/prompts"
-import { useConfig } from "../../../config"
-import { cmd } from "../../utils/cmd"
+import { useConfig } from "../../config"
+import { cmd } from "../utils/cmd"
 import { readdir } from "node:fs/promises"
-import { UI } from "../../utils/ui"
+import { UI } from "../utils/ui"
 import { join } from "node:path"
 
-export const ModelListCommand = cmd({
+export const ListCommand = cmd({
   command: "list",
-  describe: "",
+  describe: "List downloaded language models in local cache",
   aliases: ["ls"],
   async handler() {
     const { config } = await useConfig()

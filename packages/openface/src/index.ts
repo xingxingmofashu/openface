@@ -4,7 +4,9 @@ import { TranslationCommand } from "./cli/commands/translation"
 import { PullCommand } from './cli/commands/pull'
 import { TextGenerationCommand } from './cli/commands/text-generation'
 import { ConfigCommand } from './cli/commands/config'
-import { ModelCommand } from './cli/commands/model'
+import { RunCommand } from './cli/commands/run'
+import { ListCommand } from './cli/commands/list'
+import { RemoveCommand } from './cli/commands/remove'
 
 const cli = yargs(hideBin(process.argv))
   .parserConfiguration({ "populate--": true })
@@ -16,7 +18,9 @@ const cli = yargs(hideBin(process.argv))
   .command(TextGenerationCommand)
   .command(PullCommand)
   .command(ConfigCommand)
-  .command(ModelCommand)
+  .command(ListCommand)
+  .command(RemoveCommand)
+  .command(RunCommand)
   .fail((msg, err) => {
     if (
       msg?.startsWith("Unknown argument") ||
