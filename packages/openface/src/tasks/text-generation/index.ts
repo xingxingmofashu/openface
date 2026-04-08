@@ -1,10 +1,8 @@
 import { useConfig } from "../../config"
-import { pipeline, type PretrainedModelOptions } from "@huggingface/transformers"
+import { pipeline, type Message, type PretrainedModelOptions } from "@huggingface/transformers"
 import { defu } from "defu"
 
-const {
-  config
-} = await useConfig()
+const { config } = await useConfig()
 
 export type TextGenerationConfig = Record<string, any>
 
@@ -14,8 +12,11 @@ export async function useTextGeneration(model: string, opts?: PretrainedModelOpt
   })
   const pipe = await pipeline("text-generation", model, options)
 
-  async function generator(texts: string, options?: Partial<TextGenerationConfig>) {
-    return pipe(texts, options)
+  async function generator(
+    texts: string | string[] | Message[] | Message[][],
+    options?: Partial<TextGenerationConfig>,
+  ) {
+    return pipe._call(texts, options)
   }
 
   return {

@@ -1,7 +1,7 @@
 import { createInterface, type ReadLineOptions } from "node:readline/promises"
 import clipboardy from "clipboardy"
 import { log } from "@clack/prompts"
-import { PreTrainedTokenizer, TextStreamer } from "@huggingface/transformers"
+import { PreTrainedTokenizer, TextStreamer, type Message, type TextGenerationOutput } from "@huggingface/transformers"
 import { useTranslation } from "../../tasks/translation"
 import { useTextGeneration } from "../../tasks/text-generation"
 
@@ -78,10 +78,19 @@ const createTextGenerationHandler = async (modelId: string, stream: boolean): Pr
   const { generator, tokenizer } = await useTextGeneration(modelId)
   return async (input: string) => {
     if (!input) return
+
+    const messages: Message[] = []
+    messages.push({
+      role: "user",
+      content: input,
+    })
     const output = await generator(input, {
       streamer: createStreamer(tokenizer, stream),
     })
-    return output[0]?.generated_text
+    if (output) {
+      messages.push((output as TextGenerationOutput).at(0)?.generated_text.at(-1) as Message)
+    }
+    return messages.at(-1)?.content as string
   }
 }
 
