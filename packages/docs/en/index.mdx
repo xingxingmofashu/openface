@@ -1,28 +1,27 @@
 ---
 title: "OpenFace"
-description: "Local translation and text generation workflows with Bun, TypeScript, and Hugging Face Transformers."
+description: "A Bun workspace for pulling, caching, and running local Hugging Face models from a TypeScript CLI."
 ---
 
 <Note>
-  This site documents the current repository state. OpenFace is a local-first CLI, and the most reliable workflow today is
-  running commands from the repo root with Bun.
+  This documentation describes the current repository state. The examples here match the commands actually exposed by
+  the CLI today.
 </Note>
 
-## What OpenFace does
+## What OpenFace is
 
 <CardGroup cols={2}>
-  <Card title="Translate" icon="languages" href="/en/commands/translation">
-    Run multilingual translation models from a REPL and control source and target language codes when your model needs
-    them.
-  </Card>
-  <Card title="Generate Text" icon="sparkles" href="/en/commands/text-generation">
-    Use local or cached causal language models for interactive text generation.
+  <Card title="Run Models" icon="terminal" href="/en/commands/run">
+    Start a local REPL for pulled models. The current runtime supports `translation` and `text-generation` tasks.
   </Card>
   <Card title="Pull Models" icon="download" href="/en/commands/pull">
-    Download models, tokenizers, and processors into the local Hugging Face cache before you use them.
+    Download model artifacts from Hugging Face Hub into the local cache and register them for later use.
+  </Card>
+  <Card title="Manage Cache" icon="folder" href="/en/commands/list">
+    Inspect cached models with `list` and remove them with `remove`.
   </Card>
   <Card title="Configure Runtime" icon="settings" href="/en/reference/configuration">
-    Customize cache paths, model loading defaults, device selection, and dtype from a global config file.
+    Review the generated config files, cache locations, and the runtime keys merged by the CLI.
   </Card>
 </CardGroup>
 
@@ -30,34 +29,40 @@ description: "Local translation and text generation workflows with Bun, TypeScri
 
 <Steps>
   <Step title="Install dependencies">
-    Clone the repository and run `bun install` from the project root.
+    Clone the repository and run `bun install` from the project root. This is a Bun workspace, so the root install
+    covers both `packages/openface` and `packages/docs`.
   </Step>
   <Step title="Run the CLI locally">
     Use `bun run --cwd packages/openface --conditions=browser src/index.ts --help` to inspect the available commands.
   </Step>
-  <Step title="Download or stream a model">
-    Start with `pull` if you want to warm the local cache first, then use `translation` or `text-generation` in REPL
-    mode.
+  <Step title="Pull a model">
+    Start with `pull` so the model is cached locally and recorded in `~/.config/openface/model.json`.
+  </Step>
+  <Step title="Run the model">
+    Use `run <modelId>` to open the interactive REPL. If the pulled model is not a `translation` or
+    `text-generation` model, `run` will reject it.
   </Step>
 </Steps>
 
 ## Project shape
 
-OpenFace uses a small but clean layering model:
+OpenFace uses a simple workspace layout inspired by Bun-style monorepos:
 
-1. `packages/openface/src/index.ts` registers the CLI commands with `yargs`.
-2. `packages/openface/src/cli/commands/*` defines command flags and user-facing behavior.
-3. `packages/openface/src/tasks/*` wraps Hugging Face Transformers pipelines and model downloads.
-4. `packages/openface/src/config/*` loads a global config file and merges it with sensible defaults.
+1. `packages/openface` contains the CLI package.
+2. `packages/docs` contains the Mintlify docs package.
+3. `packages/openface/src/index.ts` registers the CLI commands with `yargs`.
+4. `packages/openface/src/cli/commands/*` defines command behavior.
+5. `packages/openface/src/tasks/*` wraps Hugging Face Hub and Transformers work.
+6. `packages/openface/src/config/*` loads user config and model registry files.
 
 ## Start here
 
 <CardGroup cols={3}>
   <Card title="Quickstart" icon="rocket" href="/en/quickstart">
-    Install dependencies and run your first translation or generation session.
+    Install the workspace, pull a model, and start your first REPL session.
   </Card>
-  <Card title="REPL Reference" icon="terminal" href="/en/reference/repl">
-    Learn the built-in interactive commands such as `.help`, `.copy`, and `.exit`.
+  <Card title="Command Reference" icon="list" href="/en/commands/run">
+    See the actual top-level CLI surface: `run`, `pull`, `list`, `remove`, and `config`.
   </Card>
   <Card title="Development" icon="hammer" href="/en/development">
     Preview docs with Mint and work on the Bun CLI locally.

@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "@openface/docs",
-  "description": "A Bun + TypeScript CLI for local NLP workflows powered by Hugging Face Transformers.",
+  "description": "A Bun workspace for a local-first Hugging Face CLI and its Mintlify documentation.",
   "colors": {
     "primary": "#D39B12",
     "light": "#F7C948",
@@ -43,9 +43,11 @@
               {
                 "group": "Commands",
                 "pages": [
+                  "en/commands/run",
                   "en/commands/pull",
-                  "en/commands/translation",
-                  "en/commands/text-generation"
+                  "en/commands/list",
+                  "en/commands/remove",
+                  "en/commands/config"
                 ]
               }
             ]

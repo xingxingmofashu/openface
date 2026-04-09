@@ -1,0 +1,64 @@
+---
+title: "Run"
+description: "Start the interactive REPL for a pulled model."
+---
+
+## Synopsis
+
+```bash
+openface run <modelId> [--stream]
+```
+
+## Positionals
+
+| Argument | Required | Description |
+| --- | --- | --- |
+| `modelId` | Yes | Model identifier recorded by `pull`, for example `Helsinki-NLP/opus-mt-zh-en`. |
+
+## Options
+
+| Flag | Alias | Default | Description |
+| --- | --- | --- | --- |
+| `--stream` | `-s` | `true` | Stream output while the model is decoding. |
+
+## Before you run
+
+`run` expects the model to already exist in the pulled-model registry. The normal workflow is:
+
+```bash
+openface pull Helsinki-NLP/opus-mt-zh-en
+openface run Helsinki-NLP/opus-mt-zh-en
+```
+
+## Supported model tasks
+
+The current REPL handler only supports:
+
+- `translation`
+- `text-generation`
+
+If you pull a model for another task, `run` will fail with an unsupported-task error.
+
+## Examples
+
+Run a translation model:
+
+```bash
+openface run Helsinki-NLP/opus-mt-zh-en
+```
+
+Run a text generation model with streaming:
+
+```bash
+openface run Xenova/gpt2 --stream
+```
+
+## REPL commands
+
+Inside the session:
+
+- `.help` prints help
+- `.copy <text>` runs the prompt and copies the result
+- `.exit` closes the session
+
+See the [REPL reference](/en/reference/repl) for the exact behavior.

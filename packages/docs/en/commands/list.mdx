@@ -1,0 +1,40 @@
+---
+title: "List"
+description: "List the model directories found in the local cache."
+---
+
+## Synopsis
+
+```bash
+openface list
+openface ls
+```
+
+## What it reads
+
+`list` scans the configured `CACHE_DIR` on disk and prints the provider and model names it finds there.
+
+By default the cache directory is:
+
+```text
+~/.local/share/openface/models
+```
+
+## Example
+
+```bash
+openface list
+```
+
+Typical output looks like:
+
+```text
+Models ~/.local/share/openface/models
+opus-mt-zh-en Helsinki-NLP
+gpt2 Xenova
+```
+
+## Notes
+
+- `list` reflects directories in the cache, not whether `run` supports the model task.
+- If the cache directory is empty, the command suggests using `openface pull`.

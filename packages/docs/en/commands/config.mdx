@@ -1,0 +1,43 @@
+---
+title: "Config"
+description: "Inspect the merged runtime configuration exposed by the CLI."
+---
+
+## Synopsis
+
+```bash
+openface config list
+openface config get <name>
+```
+
+## Subcommands
+
+| Command | Description |
+| --- | --- |
+| `openface config list` | Print all merged runtime config keys and values. |
+| `openface config get <name>` | Print config entries whose key matches the provided text. |
+
+## Examples
+
+```bash
+openface config list
+openface config get cache
+openface config get remote
+```
+
+## Available keys
+
+The merged runtime config currently includes keys such as:
+
+- `LOG_LEVEL`
+- `REMOTE_HOST`
+- `CACHE_KEY`
+- `CACHE_DIR`
+- `LOCAL_MODEL_PATH`
+- `REMOTE_PATH_TEMPLATE`
+- `ALLOW_LOCAL_MODELS`
+- `ALLOW_REMOTE_MODELS`
+
+## Current limitation
+
+The CLI currently exposes read-only config inspection commands. There is no `openface config set` subcommand yet.

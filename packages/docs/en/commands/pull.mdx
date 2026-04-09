@@ -1,42 +1,43 @@
 ---
 title: "Pull"
-description: "Download models, tokenizers, and processors from Hugging Face Hub for a specific task."
+description: "Download a Hugging Face model into the local cache and register it for later use."
 ---
 
 ## Synopsis
 
 ```bash
-openface pull --model <model-id> --task <task>
+openface pull <modelId>
 ```
 
-## Options
+## Positionals
 
-| Flag | Required | Description |
+| Argument | Required | Description |
 | --- | --- | --- |
-| `--model` | Yes | Hugging Face model repository ID. |
-| `--task` | Yes | Task type used to decide which model, tokenizer, or processor artifacts to download. |
+| `modelId` | Yes | Hugging Face repository ID such as `Helsinki-NLP/opus-mt-zh-en`. |
 
 ## Common examples
 
 ```bash
-openface pull --model Helsinki-NLP/opus-mt-zh-en --task translation
-openface pull --model Xenova/gpt2 --task text-generation
-openface pull --model Xenova/distilbert-base-uncased-finetuned-sst-2-english --task text-classification
+openface pull Helsinki-NLP/opus-mt-zh-en
+openface pull Xenova/gpt2
+openface pull Xenova/distilbert-base-uncased-finetuned-sst-2-english
 ```
 
-## What gets downloaded
+## What `pull` does
 
-Depending on the task, OpenFace may pull:
+`pull`:
 
-- a tokenizer
-- a processor
-- one or more model files
+- verifies the repository exists on Hugging Face Hub
+- fetches model metadata from the Hub
+- detects the task from the model metadata
+- downloads the required tokenizer, processor, and model artifacts for that task
+- stores the model metadata in `~/.config/openface/model.json`
 
-The implementation resolves these requirements from `SUPPORTED_TASKS` in `packages/openface/src/tasks/pull/tasks.ts`.
+The exact download set comes from `SUPPORTED_TASKS` in `packages/openface/src/tasks/pull/tasks.ts`.
 
-## Supported task categories
+## Supported tasks
 
-The CLI currently supports a broad set of task names, including:
+The downloader understands a broad set of Hugging Face task names, including:
 
 - `translation`
 - `text-generation`
@@ -46,12 +47,10 @@ The CLI currently supports a broad set of task names, including:
 - `question-answering`
 - `feature-extraction`
 - `automatic-speech-recognition`
-- `text-to-audio`
 - `image-classification`
-- `image-segmentation`
 - `object-detection`
 
-Run `openface pull --help` to see the full list exposed by the current build.
+This list is wider than the current runtime support of `openface run`.
 
 ## Cache behavior
 
@@ -60,3 +59,8 @@ Downloaded artifacts are stored in the configured cache directory. By default th
 ```text
 ~/.local/share/openface/models
 ```
+
+## Important note
+
+Successfully pulling a model does not guarantee it can be run through `openface run`. Today, the REPL only has handler
+implementations for `translation` and `text-generation`.

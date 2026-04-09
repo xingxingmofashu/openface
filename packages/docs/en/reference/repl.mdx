@@ -1,6 +1,6 @@
 ---
 title: "REPL"
-description: "Interactive terminal behavior shared by the translation and text-generation commands."
+description: "Interactive terminal behavior used by `openface run`."
 ---
 
 ## Built-in commands
@@ -8,12 +8,12 @@ description: "Interactive terminal behavior shared by the translation and text-g
 | Command | Description |
 | --- | --- |
 | `.help` | Print the REPL help text. |
-| `.copy <text>` | Copy the generated result to the clipboard. |
+| `.copy <text>` | Run the prompt and copy the resulting output to the clipboard. |
 | `.exit` | Exit the current session. |
 
 ## How it works
 
-Both `translation` and `text-generation` create a readline-based REPL from `packages/openface/src/cli/utils/createRepl.ts`.
+`openface run <modelId>` creates a readline-based REPL from `packages/openface/src/cli/utils/createRepl.ts`.
 
 When the REPL starts, it prints a small help banner and waits for user input:
 
@@ -22,9 +22,36 @@ Type .copy [code] to copy to clipboard. .help for more info.
 > 
 ```
 
+## Task support
+
+The REPL handler currently supports two model tasks:
+
+- `translation`
+- `text-generation`
+
+If the pulled model metadata points to any other task, `run` will fail with an unsupported-task error.
+
+## `.copy` behavior
+
+`.copy` does not copy the last response automatically. It sends the text after `.copy ` through the same inference path,
+then copies that result.
+
+Example:
+
+```text
+> .copy 你好，世界
+```
+
+## Streaming
+
+`run` enables streaming by default with `--stream=true`.
+
+- When streaming is enabled, token output is written incrementally for supported handlers.
+- When streaming is disabled, the final string is printed after the model call completes.
+
 ## Practical tips
 
 - Use `.help` the first time you start a session.
-- Use `.copy ...` when you want to send the generated text to the clipboard instead of manually selecting terminal output.
-- Use `text-generation --stream` when you want visible incremental output.
-- Translation already uses a streamer internally in the current command implementation.
+- Use `.copy ...` when you want a fresh result copied without manual terminal selection.
+- Start with a model you already pulled through `openface pull`.
+- Keep in mind that the current REPL is stateless for translation and only lightly stateful for text generation.

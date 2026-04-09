@@ -3,27 +3,46 @@ title: "Architecture"
 description: "How the OpenFace CLI is organized internally."
 ---
 
-## High-level flow
+## Workspace layout
+
+```text
+.
+├── packages/docs
+└── packages/openface
+    └── src
+        ├── cli
+        ├── config
+        ├── tasks
+        └── index.ts
+```
+
+This follows the Bun workspace pattern: one root install, separate packages under `packages/*`, and package-scoped
+entrypoints.
+
+## Runtime flow
 
 ```text
 CLI entrypoint
   -> yargs command modules
+  -> config loader / model registry
   -> task wrappers
-  -> Hugging Face Transformers pipelines
-  -> local cache + global config
+  -> Hugging Face Hub + Transformers
+  -> local cache + interactive REPL
 ```
 
 ## Main modules
 
 ### CLI entrypoint
 
-`packages/openface/src/index.ts` registers the three commands:
+`packages/openface/src/index.ts` registers the current command set:
 
-- `translation`
-- `text-generation`
 - `pull`
+- `config`
+- `list`
+- `remove`
+- `run`
 
-It also configures `yargs` help output and strict argument parsing.
+It also configures help output and strict argument parsing.
 
 ### Command layer
 
@@ -31,19 +50,26 @@ It also configures `yargs` help output and strict argument parsing.
 
 ### Task layer
 
-`packages/openface/src/tasks/*` wraps the actual Hugging Face work:
+`packages/openface/src/tasks/*` wraps the model-side work:
 
+- `tasks/pull` downloads the model assets needed for the detected Hugging Face task
 - `tasks/translation` builds a translation pipeline
 - `tasks/text-generation` builds a text-generation pipeline
-- `tasks/pull` downloads model artifacts for a selected task
+- `tasks/text2text-generation` exists as a wrapper but is not wired to a CLI command today
 
 ### Config layer
 
-`packages/openface/src/config/*` loads the global config, fills in defaults, and applies the Transformers environment
-before models are used.
+`packages/openface/src/config/*` is responsible for:
+
+- creating `~/.config/openface/config.json` if it does not exist
+- creating `~/.config/openface/model.json` if it does not exist
+- merging user config with defaults via `defu`
+- applying the merged values to the Transformers `env`
+- reading and writing pulled-model metadata
 
 ## Design notes
 
 - The project is Bun-first and uses TypeScript throughout.
-- Commands are intentionally thin and defer most model work to the task layer.
-- Local cache paths are centralized so download and inference commands share the same storage.
+- Commands are intentionally thin and defer model work to the task and config layers.
+- `pull` supports a broad set of Hugging Face task types through `SUPPORTED_TASKS`.
+- `run` is intentionally narrower right now and only has handlers for `translation` and `text-generation`.

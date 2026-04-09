@@ -1,0 +1,36 @@
+---
+title: "Remove"
+description: "Delete one or more cached models and remove their registry entries."
+---
+
+## Synopsis
+
+```bash
+openface remove <modelId...>
+openface rm <modelId...>
+```
+
+## Positionals
+
+| Argument | Required | Description |
+| --- | --- | --- |
+| `modelId...` | Yes | One or more model IDs such as `Helsinki-NLP/opus-mt-zh-en`. |
+
+## Examples
+
+```bash
+openface remove Helsinki-NLP/opus-mt-zh-en
+openface rm Helsinki-NLP/opus-mt-zh-en Xenova/gpt2
+```
+
+## What gets removed
+
+For each model ID, `remove`:
+
+- deletes the model directory under the configured cache path
+- removes the corresponding entry from `~/.config/openface/model.json`
+
+## Notes
+
+- The command skips model IDs that are not present in the cache directory.
+- This is a destructive operation for the selected cached model files.

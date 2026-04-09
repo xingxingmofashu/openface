@@ -1,17 +1,26 @@
 ---
 title: "Configuration"
-description: "Global configuration file paths, cache locations, and runtime defaults."
+description: "Config file locations, merge behavior, model registry storage, and runtime defaults."
 ---
 
-## Global config file
+## Config files
 
-OpenFace reads and writes a global config file at:
+OpenFace creates and uses two files:
 
 ```text
 ~/.config/openface/config.json
+~/.config/openface/model.json
 ```
 
-If the file does not exist, the CLI creates it automatically on first run.
+- `config.json` stores user runtime overrides
+- `model.json` stores metadata for pulled models
+
+Both files are created automatically on first use.
+
+## Merge behavior
+
+The runtime config is merged with `defu`, so user settings extend the defaults instead of replacing the entire config.
+This is similar to the layered config style used by tools such as OpenCode.
 
 ## Default cache location
 
@@ -23,39 +32,59 @@ Models are cached under:
 
 ## Runtime defaults
 
-The default config is defined in `packages/openface/src/config/default.ts`. The important runtime defaults are:
+The defaults are defined in `packages/openface/src/config/default.ts`. The important keys are:
 
-- `huggingface.env.cacheDir` points to the local model cache
-- `huggingface.pretrained.model.cache_dir` uses the same cache location
-- `huggingface.pretrained.model.device` defaults to `auto`
-- `huggingface.pretrained.model.dtype` defaults to `auto`
+- `LOG_LEVEL`
+- `REMOTE_HOST`
+- `CACHE_KEY`
+- `CACHE_DIR`
+- `LOCAL_MODEL_PATH`
+- `REMOTE_PATH_TEMPLATE`
+- `ALLOW_LOCAL_MODELS`
+- `ALLOW_REMOTE_MODELS`
+
+OpenFace explicitly sets the cache paths to `~/.local/share/openface/models` and inherits several other runtime values
+from `@huggingface/transformers`.
 
 ## Example config
 
 ```json
 {
-  "huggingface": {
-    "env": {
-      "cacheDir": "/absolute/path/to/model-cache"
-    },
-    "pretrained": {
-      "model": {
-        "cache_dir": "/absolute/path/to/model-cache",
-        "device": "auto",
-        "dtype": "auto"
-      },
-      "tokenizer": {},
-      "processor": {}
+  "CACHE_DIR": "/absolute/path/to/model-cache",
+  "LOCAL_MODEL_PATH": "/absolute/path/to/model-cache",
+  "ALLOW_REMOTE_MODELS": true
+}
+```
+
+## Model registry format
+
+Pulled models are recorded in `model.json` by provider and model name:
+
+```json
+{
+  "provider": {
+    "Helsinki-NLP": {
+      "models": {
+        "opus-mt-zh-en": {
+          "id": "Helsinki-NLP/opus-mt-zh-en",
+          "task": "translation"
+        }
+      }
     }
   }
 }
 ```
 
-## How config is applied
+`run` depends on this registry. If a model exists in the cache directory but is missing from `model.json`, the CLI will
+not treat it as available.
 
-On startup, OpenFace:
+## Inspecting config
 
-1. Loads the default config.
-2. Reads `~/.config/openface/config.json`.
-3. Merges user values into the defaults with `defu`.
-4. Applies the resulting Hugging Face environment options before creating pipelines.
+Use the built-in commands to inspect the merged runtime state:
+
+```bash
+openface config list
+openface config get cache
+```
+
+`config get <name>` performs a case-insensitive substring match against the merged config keys.

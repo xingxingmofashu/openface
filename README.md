@@ -1,94 +1,93 @@
 # OpenFace
 
-OpenFace is a command-line interface built with Bun and TypeScript, leveraging the Hugging Face Transformers library for natural language processing tasks.
+OpenFace is a Bun + TypeScript monorepo for a local-first Hugging Face CLI and its Mintlify docs site.
 
-## Features
+## Workspace Layout
 
-- **Translation**: Translate text between different languages using various transformer models
-- **Text Generation**: Generate text using state-of-the-art language models
-- **Model Management**: Pull and manage Hugging Face models for local use
-- **Interactive REPL**: Interactive mode for continuous text processing
-
-## Installation
-
-This project uses [Bun](https://bun.sh/) as the package manager. Make sure you have Bun installed:
-
-```bash
-curl -fsSL https://bun.sh/install | bash
+```text
+.
+├── package.json
+├── bun.lock
+├── tsconfig.json
+└── packages
+    ├── docs/       # Mintlify documentation
+    └── openface/   # CLI implementation
 ```
 
-Then install dependencies:
+The repository follows Bun's workspace model: install once at the root with `bun install`, then run package entrypoints
+from the workspace or via `--cwd`.
+
+## What The CLI Does
+
+- Pull models from Hugging Face Hub into a local cache
+- List and remove cached models
+- Inspect merged runtime configuration
+- Run pulled models in an interactive REPL
+
+Current `run` support is limited to models whose detected task is `translation` or `text-generation`.
+
+## Quick Start
+
+Install dependencies:
 
 ```bash
 bun install
 ```
 
-## Usage
-
-### Translation
+Inspect the CLI:
 
 ```bash
-# Translate text from Chinese to English
-openface translation "你好世界" --model Helsinki-NLP/opus-mt-zh-en
-
-# Translate with custom source and target languages
-openface translation "Hello world" --model model-name --src_lang eng_Latn --tgt_lang zho_Hans
-
-# Interactive translation mode
-openface translation --model Helsinki-NLP/opus-mt-zh-en
+bun run --cwd packages/openface --conditions=browser src/index.ts --help
 ```
 
-### Text Generation
+Pull a model:
 
 ```bash
-# Generate text using a model
-openface text-generation "Once upon a time" --model gpt2
-
-# Interactive text generation mode
-openface text-generation --model gpt2
+bun run --cwd packages/openface --conditions=browser src/index.ts pull Helsinki-NLP/opus-mt-zh-en
 ```
 
-### Model Management
+Run it:
 
 ```bash
-# Pull a model for local use
-openface pull Helsinki-NLP/opus-mt-zh-en
-
-# List available models (if implemented)
-openface pull --list
+bun run --cwd packages/openface --conditions=browser src/index.ts run Helsinki-NLP/opus-mt-zh-en
 ```
 
-## Development
+Useful built-in commands inside the REPL:
 
-### Setup
+- `.help`
+- `.copy <prompt>`
+- `.exit`
 
-```bash
-# Install dependencies
-bun install
+## Commands
 
-# Run development mode
-bun dev
-```
-
-### Scripts
-
-- `bun dev` - Run the development server
-- `bun typecheck` - Run TypeScript type checking
-- `bun run --cwd packages/openface --conditions=browser src/index.ts` - Run the CLI directly
+- `openface pull <modelId>`
+- `openface run <modelId> [--stream]`
+- `openface list`
+- `openface remove <modelId...>`
+- `openface config list`
+- `openface config get <name>`
 
 ## Configuration
 
-The project uses TypeScript with Bun-specific configuration. Type paths are set up for `@/*` imports to resolve from the `src/` directory.
+OpenFace creates and uses two files under `~/.config/openface`:
 
-## Dependencies
+- `config.json` for runtime configuration
+- `model.json` for the pulled-model registry
 
-- **@huggingface/hub**: Hugging Face Hub client
-- **@huggingface/transformers**: Transformer models library
-- **yargs**: Command-line argument parsing
-- **consola**: Logging utility
-- **clipboardy**: Clipboard access
-- **defu**: Deep object merging
+Model artifacts are cached under `~/.local/share/openface/models` by default.
+
+## Development
+
+From the repository root:
+
+```bash
+bun install
+bun dev
+bun typecheck
+```
+
+Docs live in `packages/docs` and the CLI lives in `packages/openface`.
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT. See `LICENSE`.

@@ -1,6 +1,6 @@
 ---
 title: 'Development'
-description: 'Work on the Bun CLI and preview the Mint docs locally.'
+description: 'Work on the Bun workspace, the CLI package, and the Mintlify docs package locally.'
 ---
 
 <Info>
@@ -17,6 +17,8 @@ description: 'Work on the Bun CLI and preview the Mint docs locally.'
 ```bash
 bun install
 ```
+
+This installs the root workspace and links the packages under `packages/*`.
 </Step>
 
 <Step title="Run the CLI locally">
@@ -25,7 +27,7 @@ bun install
 bun dev
 ```
 
-This starts the OpenFace CLI entrypoint with Bun from the repository root.
+This runs the root `dev` script, which delegates to `packages/openface/src/index.ts`.
 
 </Step>
 <Step title="Type-check the workspace">
@@ -38,7 +40,7 @@ bun typecheck
 
 ## Preview docs
 
-From the `docs` directory:
+From `packages/docs`:
 
 ```bash
 mint dev
@@ -49,7 +51,7 @@ Mint will start a local preview, usually on `http://localhost:3000`.
 ## Validate docs
 
 ```bash
-cd docs
+cd packages/docs
 mint validate
 ```
 
@@ -62,21 +64,23 @@ mint validate
 ## Repository layout
 
 ```text
-packages/openface/src/
-├── cli/
-│   ├── commands/     # yargs command modules
-│   └── utils/        # REPL and helper utilities
-├── config/           # Global config loading and defaults
-├── tasks/            # Hugging Face pipeline wrappers
-└── index.ts          # CLI entrypoint
+.
+├── packages/docs/          # Mintlify site
+└── packages/openface/src/
+    ├── cli/
+    │   ├── commands/       # yargs command modules
+    │   └── utils/          # REPL and helper utilities
+    ├── config/             # User config + model registry
+    ├── tasks/              # Hub downloads and pipeline wrappers
+    └── index.ts            # CLI entrypoint
 ```
 
 ## Docs files
 
-The Mint site for this repository lives under `docs/` and is configured through `docs/docs.json`.
+The Mint site for this repository lives under `packages/docs/` and is configured through `packages/docs/docs.json`.
 
 ## Notes
 
 - The root `package.json` exposes `bun dev` and `bun typecheck`.
-- The current command UX is REPL-first for `translation` and `text-generation`.
-- Model downloads and cache behavior are documented in the configuration reference.
+- The CLI surface currently consists of `pull`, `run`, `list`, `remove`, and `config`.
+- `run` is REPL-first and currently supports `translation` and `text-generation` model tasks.
