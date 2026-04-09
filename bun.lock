@@ -12,6 +12,9 @@
     "packages/openface": {
       "name": "openface",
       "version": "0.1.0",
+      "bin": {
+        "openface": "./bin/openface",
+      },
       "dependencies": {
         "@clack/prompts": "^1.2.0",
         "@huggingface/hub": "^2.11.0",

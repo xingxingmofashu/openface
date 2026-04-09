@@ -1,4 +1,3 @@
-import { useConfig } from "../../config"
 import { cmd } from "../utils/cmd"
 import { rm, exists } from "node:fs/promises"
 import { intro, log, outro, tasks, type Task, spinner as createSpinner } from "@clack/prompts"
@@ -17,6 +16,7 @@ export const RemoveCommand = cmd({
       demandOption: true,
     }),
   async handler(args) {
+    const { useConfig } = await import("../../config")
     const { config, removeModelInfo } = await useConfig()
     if (!config.CACHE_DIR) {
       log.error("Cache directory is not configured.")

@@ -1,5 +1,4 @@
 import { intro, log, outro } from "@clack/prompts"
-import { useConfig } from "../../config"
 import { cmd } from "../utils/cmd"
 import { readdir } from "node:fs/promises"
 import { UI } from "../utils/ui"
@@ -10,6 +9,7 @@ export const ListCommand = cmd({
   describe: "List downloaded language models in local cache",
   aliases: ["ls"],
   async handler() {
+    const { useConfig } = await import("../../config")
     const { config } = await useConfig()
     if(!config.CACHE_DIR) {
       log.error("Cache directory is not configured.")

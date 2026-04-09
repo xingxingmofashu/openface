@@ -2,7 +2,7 @@ import os from "node:os"
 import { resolve } from "node:path"
 import Bun from "bun"
 import { name } from "../../package.json"
-import { env, LogLevel } from "@huggingface/transformers"
+import { env } from "@huggingface/transformers"
 import { defu } from "defu"
 import { config as defaultConfig } from "./default"
 import type { ModelEntry } from "@huggingface/hub"
@@ -10,7 +10,7 @@ import type { ModelEntry } from "@huggingface/hub"
 export interface Config {
   CONFIG_PATH: string
   MODEL_CONFIG_PATH: string
-  LOG_LEVEL: typeof LogLevel
+  LOG_LEVEL: 10 | 20 | 20 | 40 | 50
   REMOTE_HOST: string
   CACHE_KEY: string
   CACHE_DIR: string
@@ -36,7 +36,11 @@ export async function useConfig() {
     }
     await modelFile.write(JSON.stringify(initModelConfig, null, 2))
   }
-  const config = defu<Config, [typeof defaultConfig]>(await Bun.file(CONFIG_PATH).json(), defaultConfig)
+  const config = defu(await Bun.file(CONFIG_PATH).json(), {
+    ...defaultConfig,
+    CONFIG_PATH,
+    MODEL_CONFIG_PATH,
+  }) as Config
 
   Object.assign(env, {
     logLevel: config.LOG_LEVEL,

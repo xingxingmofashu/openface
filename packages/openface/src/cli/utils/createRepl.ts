@@ -1,9 +1,7 @@
 import { createInterface, type ReadLineOptions } from "node:readline/promises"
 import clipboardy from "clipboardy"
 import { log } from "@clack/prompts"
-import { PreTrainedTokenizer, TextStreamer, type Message, type TextGenerationOutput } from "@huggingface/transformers"
-import { useTranslation } from "../../tasks/translation"
-import { useTextGeneration } from "../../tasks/text-generation"
+import type { PreTrainedTokenizer, Message, TextGenerationOutput } from "@huggingface/transformers"
 
 export interface CreateReplOptions extends ReadLineOptions {
   stream?: boolean
@@ -61,20 +59,28 @@ export async function createRepl(options: CreateReplOptions, callback?: ReplHand
   return repl
 }
 
-const createStreamer = (tokenizer: PreTrainedTokenizer, stream: boolean) =>
-  stream ? new TextStreamer(tokenizer, { skip_prompt: true }) : undefined
+const createStreamer = async (tokenizer: PreTrainedTokenizer, stream: boolean) => {
+  if (!stream) {
+    return undefined
+  }
+
+  const { TextStreamer } = await import("@huggingface/transformers")
+  return new TextStreamer(tokenizer, { skip_prompt: true })
+}
 
 const createTranslationHandler = async (modelId: string, stream: boolean): Promise<ReplHandler> => {
+  const { useTranslation } = await import("../../tasks/translation")
   const { translator, tokenizer } = await useTranslation(modelId)
   return async (input: string) => {
     const output = await translator(input, {
-      streamer: createStreamer(tokenizer, stream),
+      streamer: await createStreamer(tokenizer, stream),
     })
     return output.at(-1)?.translation_text
   }
 }
 
 const createTextGenerationHandler = async (modelId: string, stream: boolean): Promise<ReplHandler> => {
+  const { useTextGeneration } = await import("../../tasks/text-generation")
   const { generator, tokenizer } = await useTextGeneration(modelId)
   return async (input: string) => {
     if (!input) return
@@ -85,7 +91,7 @@ const createTextGenerationHandler = async (modelId: string, stream: boolean): Pr
       content: input,
     })
     const output = await generator(input, {
-      streamer: createStreamer(tokenizer, stream),
+      streamer: await createStreamer(tokenizer, stream),
     })
     if (output) {
       messages.push((output as TextGenerationOutput).at(0)?.generated_text.at(-1) as Message)

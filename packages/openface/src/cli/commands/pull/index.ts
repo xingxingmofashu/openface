@@ -1,5 +1,4 @@
 import { cmd } from "../../utils/cmd"
-import { pull } from "../../../tasks/pull"
 import type { ProgressInfo } from "@huggingface/transformers"
 import { intro, outro, progress as createProgress } from "@clack/prompts"
 import { UI } from "../../utils/ui"
@@ -16,6 +15,7 @@ export const PullCommand = cmd({
   handler: async (args) => {
     const progress = createProgress({ style: "block", max: 100 })
     try {
+      const { pull } = await import("../../../tasks/pull")
       intro(`Pulling model '${args.modelId}' ...`)
       progress.start("Starting download")
       let currentProgress = 0
