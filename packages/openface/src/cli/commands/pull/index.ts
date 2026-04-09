@@ -35,7 +35,7 @@ export const PullCommand = cmd({
       progress.stop(`Model '${args.modelId}' pulled successfully!`)
       outro("Download complete!")
     } catch (error) {
-      progress.stop(`Failed to pull model: ${error instanceof Error ? error.message : String(error)}`)
+      progress.error(`Failed to pull model: ${error instanceof Error ? error.message : String(error)}`)
       process.exit(1)
     }
   },
