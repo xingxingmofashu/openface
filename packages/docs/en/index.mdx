@@ -33,7 +33,8 @@ description: "A Bun workspace for pulling, caching, and running local Hugging Fa
     covers both `packages/openface` and `packages/docs`.
   </Step>
   <Step title="Run the CLI locally">
-    Use `bun run --cwd packages/openface --conditions=browser src/index.ts --help` to inspect the available commands.
+    Use `packages/openface/bin/openface --help` to inspect the available commands. The launcher can run either the
+    built CLI or the source entrypoint.
   </Step>
   <Step title="Pull a model">
     Start with `pull` so the model is cached locally and recorded in `~/.config/openface/model.json`.
@@ -50,10 +51,12 @@ OpenFace uses a simple workspace layout inspired by Bun-style monorepos:
 
 1. `packages/openface` contains the CLI package.
 2. `packages/docs` contains the Mintlify docs package.
-3. `packages/openface/src/index.ts` registers the CLI commands with `yargs`.
-4. `packages/openface/src/cli/commands/*` defines command behavior.
-5. `packages/openface/src/tasks/*` wraps Hugging Face Hub and Transformers work.
-6. `packages/openface/src/config/*` loads user config and model registry files.
+3. `packages/openface/bin/openface` is the launcher users execute.
+4. `packages/openface/scripts/build.ts` builds the distributable CLI.
+5. `packages/openface/src/index.ts` registers the CLI commands with `yargs`.
+6. `packages/openface/src/cli/commands/*` defines command behavior.
+7. `packages/openface/src/tasks/*` wraps Hugging Face Hub and Transformers work.
+8. `packages/openface/src/config/*` loads user config and model registry files.
 
 ## Start here
 

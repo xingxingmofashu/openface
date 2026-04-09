@@ -9,11 +9,10 @@ description: "How the OpenFace CLI is organized internally."
 .
 ├── packages/docs
 └── packages/openface
+    ├── bin
+    ├── scripts
+    ├── dist
     └── src
-        ├── cli
-        ├── config
-        ├── tasks
-        └── index.ts
 ```
 
 This follows the Bun workspace pattern: one root install, separate packages under `packages/*`, and package-scoped
@@ -22,7 +21,9 @@ entrypoints.
 ## Runtime flow
 
 ```text
-CLI entrypoint
+bin/openface launcher
+  -> dist/openface when built
+  -> or src/index.ts in dev fallback
   -> yargs command modules
   -> config loader / model registry
   -> task wrappers
@@ -30,7 +31,25 @@ CLI entrypoint
   -> local cache + interactive REPL
 ```
 
+## Build flow
+
+```text
+root bun run build
+  -> packages/openface/scripts/build.ts
+  -> Bun.build()
+  -> packages/openface/dist/openface
+```
+
 ## Main modules
+
+### Launcher
+
+`packages/openface/bin/openface` is the stable CLI entrypoint. It prefers the built file in `dist/` and falls back to
+the source entrypoint when a build is not present.
+
+### Build script
+
+`packages/openface/scripts/build.ts` is responsible for producing `packages/openface/dist/openface`.
 
 ### CLI entrypoint
 

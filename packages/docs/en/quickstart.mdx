@@ -4,7 +4,8 @@ description: "Install the Bun workspace, pull a model, and run the OpenFace REPL
 ---
 
 <Info>
-  The package is not published as a global binary yet. All examples below run the CLI from source with `bun run`.
+  The package is not published as a global binary yet. All examples below use the local launcher at
+  `packages/openface/bin/openface`.
 </Info>
 
 ## Prerequisites
@@ -22,7 +23,7 @@ bun install
 ## Inspect the CLI
 
 ```bash
-bun run --cwd packages/openface --conditions=browser src/index.ts --help
+packages/openface/bin/openface --help
 ```
 
 You should see these top-level commands:
@@ -36,10 +37,19 @@ You should see these top-level commands:
 ## Optional shortcut
 
 ```bash
-alias openface='bun run --cwd packages/openface --conditions=browser src/index.ts'
+alias openface='./packages/openface/bin/openface'
 ```
 
 All remaining examples use that alias.
+
+## Optional build step
+
+```bash
+bun run build
+```
+
+This runs `packages/openface/scripts/build.ts` and writes the built CLI to `packages/openface/dist/openface`. The
+launcher works without this step, but build verification is recommended before release work.
 
 ## Pull a model
 

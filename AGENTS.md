@@ -7,27 +7,31 @@ This repository is a Bun workspace with two packages under `packages/`:
 - `packages/openface/`: the CLI application. Main entry is `src/index.ts`.
 - `packages/docs/`: the Mintlify docs site. Navigation is configured in `docs.json`.
 
-Inside `packages/openface/src/`:
+Inside `packages/openface/`:
 
-- `cli/commands/` contains yargs command modules such as `pull`, `run`, `list`, `remove`, and `config`.
-- `cli/utils/` contains shared terminal helpers like the REPL and UI styling.
-- `tasks/` contains Hugging Face pipeline and model-download logic.
-- `config/` contains default config values and config/model registry loading.
+- `bin/openface` is the user-facing CLI launcher.
+- `scripts/build.ts` builds the distributable CLI.
+- `src/index.ts` is the runtime entrypoint.
+- `src/cli/commands/` contains yargs command modules such as `pull`, `run`, `list`, `remove`, and `config`.
+- `src/cli/utils/` contains shared terminal helpers like the REPL and UI styling.
+- `src/tasks/` contains Hugging Face pipeline and model-download logic.
+- `src/config/` contains default config values and config/model registry loading.
 
 ## Build, Test, and Development Commands
 
 - `bun install`: install all workspace dependencies from the repo root.
+- `bun run build`: build the CLI into `packages/openface/dist/openface` via `packages/openface/scripts/build.ts`.
 - `bun dev`: run the CLI entrypoint from the root workspace.
+- `packages/openface/bin/openface --help`: inspect the launcher-backed CLI.
 - `bun run docs:dev`: start the Mintlify docs site from the repo root.
 - `bun run docs:validate`: validate the docs build from the repo root.
 - `bun typecheck`: run TypeScript checks across the workspace.
-- `bun run --cwd packages/openface --conditions=browser src/index.ts --help`: inspect the live CLI.
 - `mint validate` from `packages/docs/`: validate the docs build.
 
 Example:
 
 ```bash
-bun run --cwd packages/openface --conditions=browser src/index.ts pull Helsinki-NLP/opus-mt-zh-en
+packages/openface/bin/openface pull Helsinki-NLP/opus-mt-zh-en
 ```
 
 ## Coding Style & Naming Conventions
@@ -39,8 +43,9 @@ PascalCase where applicable. Keep command handlers thin and move model logic int
 ## Testing Guidelines
 
 There is no dedicated test framework in the repository yet. For now, contributors should run `bun typecheck`, verify
-CLI help output locally, and validate docs with `mint validate` when touching `packages/docs/`. If you add tests, place
-them near the related source as `*.test.ts` and keep external model/network dependencies mocked.
+CLI help output locally through `packages/openface/bin/openface --help`, and validate docs with `mint validate` when
+touching `packages/docs/`. If you add tests, place them near the related source as `*.test.ts` and keep external
+model/network dependencies mocked.
 
 ## Commit & Pull Request Guidelines
 

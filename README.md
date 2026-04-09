@@ -37,19 +37,19 @@ bun install
 Inspect the CLI:
 
 ```bash
-bun run --cwd packages/openface --conditions=browser src/index.ts --help
+packages/openface/bin/openface --help
 ```
 
 Pull a model:
 
 ```bash
-bun run --cwd packages/openface --conditions=browser src/index.ts pull Helsinki-NLP/opus-mt-zh-en
+packages/openface/bin/openface pull Helsinki-NLP/opus-mt-zh-en
 ```
 
 Run it:
 
 ```bash
-bun run --cwd packages/openface --conditions=browser src/index.ts run Helsinki-NLP/opus-mt-zh-en
+packages/openface/bin/openface run Helsinki-NLP/opus-mt-zh-en
 ```
 
 Useful built-in commands inside the REPL:
@@ -82,11 +82,12 @@ From the repository root:
 
 ```bash
 bun install
+bun run build
 bun dev
 bun typecheck
 ```
 
-Docs live in `packages/docs` and the CLI lives in `packages/openface`.
+The CLI launcher is `packages/openface/bin/openface`, and the build output is `packages/openface/dist/openface`.
 
 ## License
 

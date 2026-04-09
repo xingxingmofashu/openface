@@ -5,7 +5,10 @@
   "packageManager": "bun@1.3.5",
   "description": "A CLI tool for AI-powered natural language processing with Hugging Face Transformers",
   "scripts": {
+    "build": "bun run --cwd packages/openface build",
     "dev": "bun run --cwd packages/openface --conditions=browser src/index.ts",
+    "docs:dev": "cd packages/docs && mint dev",
+    "docs:validate": "cd packages/docs && mint validate",
     "prepare": "husky",
     "typecheck": "bunx tsc --noEmit"
   },

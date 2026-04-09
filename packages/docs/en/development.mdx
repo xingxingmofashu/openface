@@ -30,6 +30,15 @@ bun dev
 This runs the root `dev` script, which delegates to `packages/openface/src/index.ts`.
 
 </Step>
+<Step title="Build the CLI">
+
+```bash
+bun run build
+```
+
+This runs `packages/openface/scripts/build.ts` and writes the distributable CLI to `packages/openface/dist/openface`.
+
+</Step>
 <Step title="Type-check the workspace">
 
 ```bash
@@ -59,6 +68,7 @@ mint validate
 
 - `mint validate` checks the docs build in strict mode.
 - `mint broken-links` scans internal and external links.
+- `bun run build` verifies the CLI build path and launcher integration.
 - `bun typecheck` verifies the TypeScript workspace.
 
 ## Repository layout
@@ -66,13 +76,17 @@ mint validate
 ```text
 .
 ├── packages/docs/          # Mintlify site
-└── packages/openface/src/
-    ├── cli/
-    │   ├── commands/       # yargs command modules
-    │   └── utils/          # REPL and helper utilities
-    ├── config/             # User config + model registry
-    ├── tasks/              # Hub downloads and pipeline wrappers
-    └── index.ts            # CLI entrypoint
+└── packages/openface/
+    ├── bin/openface        # launcher
+    ├── scripts/build.ts    # build script
+    ├── dist/openface       # built CLI output
+    └── src/
+        ├── cli/
+        │   ├── commands/   # yargs command modules
+        │   └── utils/      # REPL and helper utilities
+        ├── config/         # User config + model registry
+        ├── tasks/          # Hub downloads and pipeline wrappers
+        └── index.ts        # runtime entrypoint
 ```
 
 ## Docs files
@@ -81,6 +95,6 @@ The Mint site for this repository lives under `packages/docs/` and is configured
 
 ## Notes
 
-- The root `package.json` exposes `bun dev` and `bun typecheck`.
+- The root `package.json` exposes `bun dev`, `bun run build`, and `bun typecheck`.
 - The CLI surface currently consists of `pull`, `run`, `list`, `remove`, and `config`.
 - `run` is REPL-first and currently supports `translation` and `text-generation` model tasks.

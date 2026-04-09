@@ -4,9 +4,17 @@
   "type": "module",
   "license": "MIT",
   "private": true,
+  "bin": {
+    "openface": "./bin/openface"
+  },
+  "exports": {
+    "./*": "./src/*.ts"
+  },
   "scripts": {
     "dev": "bun run --conditions=browser ./src/index.ts",
-    "typecheck": "bunx tsc --noEmit"
+    "build": "bun run scripts/build.ts",
+    "typecheck": "bunx tsc --noEmit",
+    "format": "echo 'Formatting code...' && bun run --prettier --write src/**/*.ts"
   },
   "dependencies": {
     "@clack/prompts": "^1.2.0",
