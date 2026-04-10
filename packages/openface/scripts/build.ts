@@ -1,9 +1,11 @@
 #!/usr/bin/env bun
 
 import { $ } from "bun"
-import { existsSync, readdirSync } from "node:fs"
-import { join } from "node:path"
 import pkg from "../package.json"
+
+const singleFlag = process.argv.includes("--single")
+const baselineFlag = process.argv.includes("--baseline")
+const skipInstall = process.argv.includes("--skip-install")
 
 const allTargets: {
   os: string
@@ -45,15 +47,6 @@ const allTargets: {
     arch: "arm64",
   },
   {
-    os: "darwin",
-    arch: "x64",
-  },
-  {
-    os: "darwin",
-    arch: "x64",
-    avx2: false,
-  },
-  {
     os: "win32",
     arch: "arm64",
   },
@@ -68,38 +61,32 @@ const allTargets: {
   },
 ]
 
-const targets = allTargets
+const targets = singleFlag
+  ? allTargets.filter((item) => {
+      if (item.os !== process.platform || item.arch !== process.arch) {
+        return false
+      }
+
+      // When building for the current platform, prefer a single native binary by default.
+      // Baseline binaries require additional Bun artifacts and can be flaky to download.
+      if (item.avx2 === false) {
+        return baselineFlag
+      }
+
+      // also skip abi-specific builds for the same reason
+      if (item.abi !== undefined) {
+        return false
+      }
+
+      return true
+    })
+  : allTargets
 
 await $`rm -rf dist`
 
 const binaries: Record<string, string> = {}
-const onnxruntimePackagesDir = join(process.cwd(), "..", "..", "node_modules", ".bun")
-
-function hasOnnxruntimeBinding(os: string, arch: "arm64" | "x64") {
-  if (!existsSync(onnxruntimePackagesDir)) {
-    return true
-  }
-
-  const onnxruntimePackages = readdirSync(onnxruntimePackagesDir).filter((entry) => entry.startsWith("onnxruntime-node@"))
-  if (onnxruntimePackages.length === 0) {
-    return true
-  }
-
-  return onnxruntimePackages.some((entry) =>
-    existsSync(
-      join(
-        onnxruntimePackagesDir,
-        entry,
-        "node_modules",
-        "onnxruntime-node",
-        "bin",
-        "napi-v6",
-        os,
-        arch,
-        "onnxruntime_binding.node",
-      ),
-    ),
-  )
+if (!skipInstall) {
+  await $`bun install --os="*" --cpu="*" @parcel/watcher@${pkg.dependencies["@parcel/watcher"]}`
 }
 
 for (const item of targets) {
@@ -113,12 +100,6 @@ for (const item of targets) {
   ]
     .filter(Boolean)
     .join("-")
-
-  if (item.os === process.platform && !hasOnnxruntimeBinding(item.os, item.arch)) {
-    console.warn(`skipping ${name}: missing onnxruntime native binding for ${item.os}-${item.arch}`)
-    continue
-  }
-
   console.log(`building ${name}`)
   await $`mkdir -p dist/${name}/bin`
 
@@ -128,13 +109,17 @@ for (const item of targets) {
     compile: {
       autoloadBunfig: false,
       autoloadDotenv: false,
+      autoloadTsconfig: true,
+      autoloadPackageJson: true,
       target: name.replace(pkg.name, "bun") as any,
       outfile: `dist/${name}/bin/openface`,
+      execArgv: [`--user-agent=openface/${pkg.version}`, "--use-system-ca", "--"],
       windows: {},
     },
     entrypoints: ["./src/index.ts"],
     define: {
-      OPENCODE_VERSION: `'${pkg.version}'`
+      OPENFACE_VERSION: `'${pkg.version}'`,
+      OPENFACE_LIBC: item.os === "linux" ? `'${item.abi ?? "glibc"}'` : "",
     },
   })
 
@@ -151,7 +136,6 @@ for (const item of targets) {
     }
   }
 
-  await $`rm -rf ./dist/${name}/bin/tui`
   await Bun.file(`dist/${name}/package.json`).write(
     JSON.stringify(
       {
