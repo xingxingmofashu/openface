@@ -2,6 +2,23 @@
 
 OpenFace is a Bun + TypeScript monorepo for a local-first Hugging Face CLI and its Mintlify docs site.
 
+## Install
+
+Install the latest published CLI binary:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/xingxingmofashu/openface/main/install.sh | bash
+```
+
+Install a specific version:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/xingxingmofashu/openface/main/install.sh | bash -s -- --version 0.1.0
+```
+
+By default, the installer places the binary in `~/.openface/bin/openface` and will try to add that directory to your
+shell `PATH`.
+
 ## Workspace Layout
 
 ```text
