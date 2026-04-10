@@ -7,13 +7,13 @@ OpenFace is a Bun + TypeScript monorepo for a local-first Hugging Face CLI and i
 Install the latest published CLI binary:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/xingxingmofashu/openface/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/xingxingmofashu/openface/main/install | bash
 ```
 
 Install a specific version:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/xingxingmofashu/openface/main/install.sh | bash -s -- --version 0.1.0
+curl -fsSL https://raw.githubusercontent.com/xingxingmofashu/openface/main/install | bash -s -- --version 0.1.0
 ```
 
 By default, the installer places the binary in `~/.openface/bin/openface` and will try to add that directory to your
