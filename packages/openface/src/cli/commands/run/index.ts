@@ -18,7 +18,7 @@ export const RunCommand = cmd({
         default: true,
       }),
   async handler(args) {
-    const { useConfig } = await import("../../../config")
+    const { useConfig } = await import("../../../config/index")
     const { config, getModelInfo, exists } = await useConfig()
     if (!config.CACHE_DIR) {
       log.error("Cache directory is not configured.")

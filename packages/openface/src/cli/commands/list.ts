@@ -9,14 +9,19 @@ export const ListCommand = cmd({
   describe: "List downloaded language models in local cache",
   aliases: ["ls"],
   async handler() {
-    const { useConfig } = await import("../../config")
+    const { useConfig } = await import("../../config/index")
     const { config } = await useConfig()
     if(!config.CACHE_DIR) {
       log.error("Cache directory is not configured.")
       process.exit(1)
     }
     const result: Array<{ provider: string; model: { id: string; name: string } }> = []
-    const providers = await readdir(config.CACHE_DIR, { withFileTypes: true })
+    const providers = await readdir(config.CACHE_DIR, { withFileTypes: true }).catch((error: any) => {
+      if (error?.code === "ENOENT") {
+        return []
+      }
+      throw error
+    })
 
     for await (const provider of providers.filter((p) => p.isDirectory()).map((p) => p.name)) {
       const models = await readdir(join(config.CACHE_DIR, provider), { withFileTypes: true })

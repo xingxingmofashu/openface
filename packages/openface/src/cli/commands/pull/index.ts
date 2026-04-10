@@ -15,7 +15,7 @@ export const PullCommand = cmd({
   handler: async (args) => {
     const progress = createProgress({ style: "block", max: 100 })
     try {
-      const { pull } = await import("../../../tasks/pull")
+      const { pull } = await import("../../../tasks/pull/index")
       intro(`Pulling model '${args.modelId}' ...`)
       progress.start("Starting download")
       let currentProgress = 0

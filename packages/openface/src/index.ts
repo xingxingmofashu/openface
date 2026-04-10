@@ -34,6 +34,9 @@ const cli = yargs(hideBin(process.argv))
 try {
   await cli.parse()
 } catch (error) {
+  if (error instanceof Error) {
+    console.error(error.message)
+  }
   process.exitCode = 1
 } finally {
   // Some subprocesses don't react properly to SIGTERM and similar signals.

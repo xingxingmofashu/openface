@@ -2,13 +2,10 @@ import { useConfig } from "../../config"
 import { pipeline, type PretrainedModelOptions } from "@huggingface/transformers"
 import { defu } from "defu"
 
-const {
-  config
-} = await useConfig()
-
 export type GenerationFunctionParameters = Record<string, any>
 
 export async function useText2TextGeneration(model: string, opts?: PretrainedModelOptions) {
+  const { config } = await useConfig()
   const options = defu(opts, {
     cache_dir: config.CACHE_DIR,
   })

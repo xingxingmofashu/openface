@@ -9,7 +9,6 @@ export const ConfigListCommand = cmd({
   async handler() {
     const { useConfig } = await import("../../../config")
     const { config } = await useConfig()
-    console.log(config)
     intro(`Configurations ${UI.Style.TEXT_DIM}${config.CONFIG_PATH}`)
     for (const [key, value] of Object.entries(config)) {
       log.info(`${key.toUpperCase()} ${UI.Style.TEXT_DIM}${value}`)
