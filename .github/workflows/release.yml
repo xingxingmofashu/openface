@@ -16,17 +16,7 @@ permissions:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            name: linux
-          - os: macos-latest
-            name: darwin
-          - os: windows-latest
-            name: windows
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,29 +33,28 @@ jobs:
         run: bun run build
         working-directory: packages/openface
 
-      - name: Package artifacts (Unix)
-        if: matrix.os != 'windows-latest'
+      - name: Package Unix artifacts
         run: |
           cd packages/openface/dist
-          for dir in openface-*/; do
-            name="${dir%/}"
-            tar -czvf "${name}.tar.gz" "$name"
+          for dir in openface-linux-* openface-darwin-*; do
+            if [ -d "$dir" ]; then
+              tar -czvf "${dir}.tar.gz" "$dir"
+            fi
           done
 
-      - name: Package artifacts (Windows)
-        if: matrix.os == 'windows-latest'
-        shell: pwsh
+      - name: Package Windows artifacts
         run: |
           cd packages/openface/dist
-          Get-ChildItem -Directory -Filter "openface-*" | ForEach-Object {
-            $name = $_.Name
-            Compress-Archive -Path $name -DestinationPath "$name.zip"
-          }
+          for dir in openface-windows-*; do
+            if [ -d "$dir" ]; then
+              zip -r "${dir}.zip" "$dir"
+            fi
+          done
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: binaries-${{ matrix.name }}
+          name: binaries
           path: |
             packages/openface/dist/*.tar.gz
             packages/openface/dist/*.zip
@@ -78,11 +67,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download all artifacts
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
+          name: binaries
           path: artifacts
-          merge-multiple: true
 
       - name: List artifacts
         run: ls -la artifacts/
