@@ -16,7 +16,7 @@ export const RemoveCommand = cmd({
       demandOption: true,
     }),
   async handler(args) {
-    const { useConfig } = await import("../../config")
+    const { useConfig } = await import("../../config/index")
     const { config, removeModelInfo } = await useConfig()
     if (!config.CACHE_DIR) {
       log.error("Cache directory is not configured.")

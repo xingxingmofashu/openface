@@ -1,13 +1,12 @@
 import os from "node:os"
 import { resolve } from "node:path"
 import Bun from "bun"
-import { name } from "../../package.json"
-import { env } from "@huggingface/transformers"
 import { defu } from "defu"
-import { config as defaultConfig } from "./default"
+import { config as defaultConfig, OPENFACE_APP_DIR } from "./default"
 import type { ModelEntry } from "@huggingface/hub"
+import { mkdir } from "node:fs/promises"
 
-export interface Config {
+export interface OpenFaceConfig {
   CONFIG_PATH: string
   MODEL_CONFIG_PATH: string
   LOG_LEVEL: 10 | 20 | 20 | 40 | 50
@@ -21,8 +20,11 @@ export interface Config {
 }
 
 export async function useConfig() {
-  const CONFIG_PATH = resolve(os.homedir(), ".config", name, `config.json`)
-  const MODEL_CONFIG_PATH = resolve(os.homedir(), ".config", name, `model.json`)
+  const configDir = resolve(os.homedir(), ".config", OPENFACE_APP_DIR)
+  const CONFIG_PATH = resolve(configDir, `config.json`)
+  const MODEL_CONFIG_PATH = resolve(configDir, `model.json`)
+
+  await mkdir(configDir, { recursive: true })
 
   const file = await Bun.file(CONFIG_PATH)
   if (!(await file.exists())) {
@@ -40,18 +42,29 @@ export async function useConfig() {
     ...defaultConfig,
     CONFIG_PATH,
     MODEL_CONFIG_PATH,
-  }) as Config
+  }) as OpenFaceConfig
 
-  Object.assign(env, {
-    logLevel: config.LOG_LEVEL,
-    remoteHost: config.REMOTE_HOST,
-    cacheKey: config.CACHE_KEY,
-    cacheDir: config.CACHE_DIR,
-    localModelPath: config.LOCAL_MODEL_PATH,
-    remotePathTemplate: config.REMOTE_PATH_TEMPLATE,
-    allowLocalModels: config.ALLOW_LOCAL_MODELS,
-    allowRemoteModels: config.ALLOW_REMOTE_MODELS,
-  } as typeof env)
+  await mkdir(config.CACHE_DIR, { recursive: true })
+
+  async function mergeTransformersEnv() {
+    try {
+      const { env } = await import("@huggingface/transformers")
+      Object.assign(env, {
+        logLevel: config.LOG_LEVEL,
+        remoteHost: config.REMOTE_HOST,
+        cacheKey: config.CACHE_KEY,
+        cacheDir: config.CACHE_DIR,
+        localModelPath: config.LOCAL_MODEL_PATH,
+        remotePathTemplate: config.REMOTE_PATH_TEMPLATE,
+        allowLocalModels: config.ALLOW_LOCAL_MODELS,
+        allowRemoteModels: config.ALLOW_REMOTE_MODELS,
+      } as typeof env)
+    } catch {
+      // Keep non-inference commands usable when optional native deps are missing.
+    }
+  }
+
+  await mergeTransformersEnv()
 
   function languageModel(modelId: string) {
     const [provider, model] = modelId.split("/") as [string, string]

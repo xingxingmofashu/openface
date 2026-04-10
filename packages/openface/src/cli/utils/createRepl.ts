@@ -69,7 +69,7 @@ const createStreamer = async (tokenizer: PreTrainedTokenizer, stream: boolean) =
 }
 
 const createTranslationHandler = async (modelId: string, stream: boolean): Promise<ReplHandler> => {
-  const { useTranslation } = await import("../../tasks/translation")
+  const { useTranslation } = await import("../../tasks/translation/index")
   const { translator, tokenizer } = await useTranslation(modelId)
   return async (input: string) => {
     const output = await translator(input, {
@@ -80,7 +80,7 @@ const createTranslationHandler = async (modelId: string, stream: boolean): Promi
 }
 
 const createTextGenerationHandler = async (modelId: string, stream: boolean): Promise<ReplHandler> => {
-  const { useTextGeneration } = await import("../../tasks/text-generation")
+  const { useTextGeneration } = await import("../../tasks/text-generation/index")
   const { generator, tokenizer } = await useTextGeneration(modelId)
   return async (input: string) => {
     if (!input) return
