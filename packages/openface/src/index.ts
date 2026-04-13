@@ -1,10 +1,11 @@
-import yargs from 'yargs'
+import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
-import { PullCommand } from './cli/commands/pull'
-import { ConfigCommand } from './cli/commands/config'
-import { RunCommand } from './cli/commands/run'
-import { ListCommand } from './cli/commands/list'
-import { RemoveCommand } from './cli/commands/remove'
+import { PullCommand } from "./cli/commands/pull"
+import { ConfigCommand } from "./cli/commands/config"
+import { RunCommand } from "./cli/commands/run"
+import { ListCommand } from "./cli/commands/list"
+import { RemoveCommand } from "./cli/commands/remove"
+import pkg from "../package.json"
 
 const cli = yargs(hideBin(process.argv))
   .parserConfiguration({ "populate--": true })
@@ -17,6 +18,7 @@ const cli = yargs(hideBin(process.argv))
   .command(ListCommand)
   .command(RemoveCommand)
   .command(RunCommand)
+  .version("version", pkg.version)
   .fail((msg, err) => {
     if (
       msg?.startsWith("Unknown argument") ||

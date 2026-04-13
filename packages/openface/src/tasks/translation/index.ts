@@ -3,7 +3,9 @@ import type { PretrainedModelOptions } from "@huggingface/transformers"
 import { defu } from "defu"
 import { useConfig } from "../../config"
 
-export type GenerationFunctionParameters = Record<string, any>
+export type GenerationFunctionParameters = Record<string, any> & {
+  stream?: boolean
+}
 
 export async function useTranslation(model?: string, opts?: PretrainedModelOptions) {
   const { config } = await useConfig({ syncTransformersEnv: true })
@@ -12,7 +14,11 @@ export async function useTranslation(model?: string, opts?: PretrainedModelOptio
   })
   const pipe = await pipeline<"translation">("translation", model, options)
 
-  function translator(texts: string | string[], config?: GenerationFunctionParameters) {
+  async function translator(texts: string | string[], config?: GenerationFunctionParameters) {
+    if (config?.stream) {
+      const { TextStreamer } = await import("@huggingface/transformers")
+      config.streamer = new TextStreamer(pipe.tokenizer, { skip_prompt: true })
+    }
     return pipe(texts, config)
   }
 
