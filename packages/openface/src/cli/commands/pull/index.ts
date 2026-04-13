@@ -2,6 +2,7 @@ import { cmd } from "../../utils/cmd"
 import type { ProgressInfo } from "@huggingface/transformers"
 import { intro, outro, progress as createProgress } from "@clack/prompts"
 import { UI } from "../../utils/ui"
+import { prepareTransformersRuntime } from "../../../config"
 
 export const PullCommand = cmd({
   command: "pull <modelId>",
@@ -13,9 +14,10 @@ export const PullCommand = cmd({
       demandOption: true,
     }),
   handler: async (args) => {
+    await prepareTransformersRuntime()
+    const { pull } = await import("../../../tasks/pull")
     const progress = createProgress({ style: "block", max: 100 })
     try {
-      const { pull } = await import("../../../tasks/pull/index")
       intro(`Pulling model '${args.modelId}' ...`)
       progress.start("Starting download")
       let currentProgress = 0

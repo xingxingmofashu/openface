@@ -12,7 +12,7 @@ import { useConfig } from "../../config"
 import { modelInfo, repoExists } from "@huggingface/hub"
 
 export async function pull(modelId: string, opts: PretrainedModelOptions = {}) {
-  const { config, setModelInfo } = await useConfig()
+  const { config, setModelInfo } = await useConfig({ syncTransformersEnv: true })
 
   const exists = await repoExists({ repo: modelId })
   if (!exists) {

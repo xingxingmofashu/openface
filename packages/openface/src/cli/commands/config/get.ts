@@ -1,6 +1,7 @@
 import { UI } from "../../utils/ui"
 import { cmd } from "../../utils/cmd"
 import { log, intro, outro } from "@clack/prompts"
+import { useConfig } from "../../../config"
 
 export const ConfigGetCommand = cmd({
   command: "get <name>",
@@ -12,7 +13,6 @@ export const ConfigGetCommand = cmd({
       demandOption: true,
     }),
   async handler(args) {
-    const { useConfig } = await import("../../../config")
     const { config } = await useConfig()
     intro(`Configurations ${UI.Style.TEXT_DIM}${config.CONFIG_PATH}`)
     const result = Object.entries(config).filter(([key, value]) => key.toUpperCase().includes(args.name.toUpperCase()))

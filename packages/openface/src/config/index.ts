@@ -1,10 +1,11 @@
 import os from "node:os"
-import { resolve } from "node:path"
+import { dirname, resolve } from "node:path"
 import Bun from "bun"
 import { defu } from "defu"
 import { config as defaultConfig, OPENFACE_APP_DIR } from "./default"
 import type { ModelEntry } from "@huggingface/hub"
-import { mkdir } from "node:fs/promises"
+import { existsSync } from "node:fs"
+import { copyFile, mkdir, readdir } from "node:fs/promises"
 
 export interface OpenFaceConfig {
   CONFIG_PATH: string
@@ -19,7 +20,93 @@ export interface OpenFaceConfig {
   ALLOW_REMOTE_MODELS: boolean
 }
 
-export async function useConfig() {
+function prependPathEnv(key: string, path: string) {
+  const delimiter = process.platform === "win32" ? ";" : ":"
+  const current = process.env[key]
+  const parts = (current ?? "").split(delimiter).filter(Boolean)
+  if (parts.includes(path)) {
+    return
+  }
+  process.env[key] = current ? `${path}${delimiter}${current}` : path
+}
+
+function resolveOrtRuntimeDir() {
+  const execDir = dirname(process.execPath)
+  const candidates = [
+    // packaged layout: <root>/bin/openface and <root>/runtime/onnxruntime/<os>/<arch>
+    resolve(execDir, "..", "runtime", "onnxruntime", process.platform, process.arch),
+    // running from package root
+    resolve(process.cwd(), "node_modules", "onnxruntime-node", "bin", "napi-v6", process.platform, process.arch),
+    // running from monorepo root
+    resolve(
+      process.cwd(),
+      "packages",
+      "openface",
+      "node_modules",
+      "onnxruntime-node",
+      "bin",
+      "napi-v6",
+      process.platform,
+      process.arch,
+    ),
+  ]
+
+  return candidates.find((path) => existsSync(path))
+}
+
+function configureOrtLibraryPath() {
+  const ortRuntimeDir = resolveOrtRuntimeDir()
+  if (!ortRuntimeDir) {
+    return undefined
+  }
+
+  if (process.platform === "darwin") {
+    prependPathEnv("DYLD_FALLBACK_LIBRARY_PATH", ortRuntimeDir)
+    return ortRuntimeDir
+  }
+
+  if (process.platform === "linux") {
+    prependPathEnv("LD_LIBRARY_PATH", ortRuntimeDir)
+    return ortRuntimeDir
+  }
+
+  if (process.platform === "win32") {
+    prependPathEnv("PATH", ortRuntimeDir)
+  }
+
+  return ortRuntimeDir
+}
+
+async function stageOrtSharedLibs() {
+  const ortRuntimeDir = configureOrtLibraryPath()
+  if (!ortRuntimeDir || !existsSync(ortRuntimeDir)) {
+    return
+  }
+
+  const tmpDir = os.tmpdir()
+  const files = await readdir(ortRuntimeDir)
+
+  for (const file of files) {
+    const isSharedLib =
+      (process.platform === "darwin" && file.endsWith(".dylib")) ||
+      (process.platform === "linux" && file.includes(".so")) ||
+      (process.platform === "win32" && file.toLowerCase().endsWith(".dll"))
+    if (!isSharedLib) {
+      continue
+    }
+    await copyFile(resolve(ortRuntimeDir, file), resolve(tmpDir, file))
+  }
+}
+
+export async function prepareTransformersRuntime() {
+  try {
+    await stageOrtSharedLibs()
+  } catch {
+    // Runtime staging is best-effort; downstream commands will show the original error if it still fails.
+  }
+}
+
+export async function useConfig(opts: { syncTransformersEnv?: boolean } = {}) {
   const configDir = resolve(os.homedir(), ".config", OPENFACE_APP_DIR)
   const CONFIG_PATH = resolve(configDir, `config.json`)
   const MODEL_CONFIG_PATH = resolve(configDir, `model.json`)
@@ -48,6 +135,7 @@ export async function useConfig() {
 
   async function mergeTransformersEnv() {
     try {
+      await prepareTransformersRuntime()
       const { env } = await import("@huggingface/transformers")
       Object.assign(env, {
         logLevel: config.LOG_LEVEL,
@@ -64,7 +152,9 @@ export async function useConfig() {
     }
   }
 
-  await mergeTransformersEnv()
+  if (opts.syncTransformersEnv) {
+    await mergeTransformersEnv()
+  }
 
   function languageModel(modelId: string) {
     const [provider, model] = modelId.split("/") as [string, string]

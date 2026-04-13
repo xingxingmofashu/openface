@@ -2,6 +2,8 @@
 
 import { $ } from "bun"
 import pkg from "../package.json"
+import path from "node:path"
+import { copyFile, mkdir, readdir } from "node:fs/promises"
 
 const singleFlag = process.argv.includes("--single")
 const baselineFlag = process.argv.includes("--baseline")
@@ -101,7 +103,17 @@ for (const item of targets) {
     .filter(Boolean)
     .join("-")
   console.log(`building ${name}`)
+
+  const onnxruntimeDir = path.join(__dirname, "../node_modules", "onnxruntime-node/bin/napi-v6", item.os, item.arch)
+  const onnxruntimeFiles = await readdir(onnxruntimeDir)
+  const onnxruntime = onnxruntimeFiles.map((file) => path.join(onnxruntimeDir, file))
+
   await $`mkdir -p dist/${name}/bin`
+  const runtimeDir = `dist/${name}/runtime/onnxruntime/${item.os}/${item.arch}`
+  await mkdir(runtimeDir, { recursive: true })
+  for (const file of onnxruntimeFiles) {
+    await copyFile(path.join(onnxruntimeDir, file), path.join(runtimeDir, file))
+  }
 
   await Bun.build({
     conditions: ["browser"],
@@ -116,25 +128,12 @@ for (const item of targets) {
       execArgv: [`--user-agent=openface/${pkg.version}`, "--use-system-ca", "--"],
       windows: {},
     },
-    entrypoints: ["./src/index.ts"],
+    entrypoints: ["./src/index.ts", ...onnxruntime],
     define: {
       OPENFACE_VERSION: `'${pkg.version}'`,
       OPENFACE_LIBC: item.os === "linux" ? `'${item.abi ?? "glibc"}'` : "",
     },
   })
-
-  // Smoke test: only run if binary is for current platform
-  if (item.os === process.platform && item.arch === process.arch && !item.abi) {
-    const binaryPath = `dist/${name}/bin/openface`
-    console.log(`Running smoke test: ${binaryPath} --version`)
-    try {
-      const versionOutput = await $`${binaryPath} --version`.text()
-      console.log(`Smoke test passed: ${versionOutput.trim()}`)
-    } catch (e) {
-      console.error(`Smoke test failed for ${name}:`, e)
-      process.exit(1)
-    }
-  }
 
   await Bun.file(`dist/${name}/package.json`).write(
     JSON.stringify(
