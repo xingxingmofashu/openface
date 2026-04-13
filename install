@@ -20,6 +20,7 @@ archive_ext=''
 filename=''
 url=''
 installed_binary_name="$APP"
+tmp_dir=''
 
 usage() {
   cat <<EOF
@@ -237,10 +238,10 @@ find_extracted_binary() {
 }
 
 download_and_install() {
-  local tmp_dir archive_path extracted_binary
+  local archive_path extracted_binary
   tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/openface_install_XXXXXX")
   archive_path="$tmp_dir/$filename"
-  trap 'rm -rf "$tmp_dir"' EXIT
+  trap '[[ -n "$tmp_dir" ]] && rm -rf "$tmp_dir"' EXIT
 
   print_message info "${MUTED}Installing ${NC}${APP} ${MUTED}version: ${NC}${specific_version}"
   curl -fL# -o "$archive_path" "$url"
