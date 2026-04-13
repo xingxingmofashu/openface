@@ -1,24 +1,33 @@
 ---
 title: "Quickstart"
-description: "Install the Bun workspace, pull a model, and run the OpenFace REPL from source."
+description: "Install OpenFace, pull a model, and run the interactive REPL."
 ---
 
-<Info>
-  The package is not published as a global binary yet. All examples below use the local launcher at
-  `packages/openface/bin/openface`.
-</Info>
+## Install (binary)
 
-## Prerequisites
+Install the latest published binary:
 
-- Bun `1.3.x` or newer
-- Internet access for the first `pull`
-- Enough disk space for models under `~/.local/share/openface/models`
+```bash
+curl -fsSL https://raw.githubusercontent.com/xingxingmofashu/openface/main/install | bash
+```
 
-## Install dependencies
+The installer places the binary at `~/.openface/bin/openface` and adds that directory to your shell `PATH`.
+
+## Install (from source)
+
+To run from the repository instead:
 
 ```bash
 bun install
 ```
+
+Then use the local launcher at `packages/openface/bin/openface`.
+
+## Prerequisites
+
+- Bun `1.3.x` or newer (for source builds)
+- Internet access for the first `pull`
+- Enough disk space for models under `~/.local/share/openface/models`
 
 ## Inspect the CLI
 

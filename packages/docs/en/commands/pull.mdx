@@ -37,18 +37,35 @@ The exact download set comes from `SUPPORTED_TASKS` in `packages/openface/src/ta
 
 ## Supported tasks
 
-The downloader understands a broad set of Hugging Face task names, including:
+`pull` understands all 25 Hugging Face task types listed below:
 
-- `translation`
-- `text-generation`
-- `text-classification`
-- `token-classification`
-- `summarization`
-- `question-answering`
-- `feature-extraction`
-- `automatic-speech-recognition`
-- `image-classification`
-- `object-detection`
+| Task | Type |
+| --- | --- |
+| `text-classification` | text |
+| `token-classification` | text |
+| `question-answering` | text |
+| `fill-mask` | text |
+| `summarization` | text |
+| `translation` | text |
+| `text2text-generation` | text |
+| `text-generation` | text |
+| `zero-shot-classification` | text |
+| `text-to-audio` | text |
+| `feature-extraction` | text |
+| `audio-classification` | audio |
+| `zero-shot-audio-classification` | multimodal |
+| `automatic-speech-recognition` | multimodal |
+| `image-to-text` | multimodal |
+| `image-classification` | multimodal |
+| `image-segmentation` | multimodal |
+| `zero-shot-image-classification` | multimodal |
+| `object-detection` | multimodal |
+| `zero-shot-object-detection` | multimodal |
+| `document-question-answering` | multimodal |
+| `background-removal` | image |
+| `image-to-image` | image |
+| `depth-estimation` | image |
+| `image-feature-extraction` | image |
 
 This list is wider than the current runtime support of `openface run`.
 

@@ -22,10 +22,11 @@ entrypoints.
 
 ```text
 bin/openface launcher
-  -> dist/openface when built
-  -> or src/index.ts in dev fallback
+  -> detects platform + arch + libc variant
+  -> resolves platform binary from node_modules/<name>/bin/openface
   -> yargs command modules
   -> config loader / model registry
+  -> ONNX Runtime library staging
   -> task wrappers
   -> Hugging Face Hub + Transformers
   -> local cache + interactive REPL
@@ -36,20 +37,33 @@ bin/openface launcher
 ```text
 root bun run build
   -> packages/openface/scripts/build.ts
-  -> Bun.build()
-  -> packages/openface/dist/openface
+  -> for each target platform:
+       copy ONNX Runtime native binaries -> dist/<name>/runtime/
+       Bun.build({ compile }) -> dist/<name>/bin/openface
+       write dist/<name>/package.json  (name, version, os, cpu)
 ```
+
+The build script covers: `linux-arm64`, `linux-x64`, `linux-x64-baseline`, `linux-musl-arm64`,
+`linux-musl-x64`, `linux-musl-x64-baseline`, `darwin-arm64`, `windows-arm64`, `windows-x64`,
+`windows-x64-baseline`. Pass `--single` to build only the current platform, or `--baseline` to include
+AVX2-free x64 variants.
 
 ## Main modules
 
 ### Launcher
 
-`packages/openface/bin/openface` is the stable CLI entrypoint. It prefers the built file in `dist/` and falls back to
-the source entrypoint when a build is not present.
+`packages/openface/bin/openface` is the stable CLI entrypoint. It:
+
+1. Checks `OPENFACE_BIN_PATH` first — spawns that binary directly if set.
+2. Detects platform, architecture, and libc variant (musl vs. glibc).
+3. Runs `supportsAvx2()` to choose between x64 and x64-baseline.
+4. Walks up the directory tree looking for platform-specific packages under `node_modules/<name>/bin/openface`.
+5. Spawns the first found binary, inheriting stdio and propagating the exit code.
 
 ### Build script
 
-`packages/openface/scripts/build.ts` is responsible for producing `packages/openface/dist/openface`.
+`packages/openface/scripts/build.ts` produces per-target distributable binaries at
+`packages/openface/dist/<platform>/bin/openface`.
 
 ### CLI entrypoint
 
@@ -67,13 +81,22 @@ It also configures help output and strict argument parsing.
 
 `packages/openface/src/cli/commands/*` handles flag definitions and user-facing command behavior.
 
+### REPL utilities
+
+`packages/openface/src/cli/utils/createRepl.ts` is the readline loop used by `run`. It handles `.exit`,
+`.help`, `.copy`, and general inference calls, and creates a `TextStreamer` for streaming output.
+
+`packages/openface/src/cli/repl/` contains an alternative set of handler implementations
+(`handler/translation.ts`, `handler/text-generation.ts`) that delegate streaming to the task layer rather
+than constructing a streamer in the REPL itself. This directory is not wired to the current `run` command.
+
 ### Task layer
 
 `packages/openface/src/tasks/*` wraps the model-side work:
 
 - `tasks/pull` downloads the model assets needed for the detected Hugging Face task
-- `tasks/translation` builds a translation pipeline
-- `tasks/text-generation` builds a text-generation pipeline
+- `tasks/translation` builds a translation pipeline, optionally creating a `TextStreamer`
+- `tasks/text-generation` builds a text-generation pipeline, optionally creating a `TextStreamer`
 - `tasks/text2text-generation` exists as a wrapper but is not wired to a CLI command today
 
 ### Config layer
@@ -83,6 +106,7 @@ It also configures help output and strict argument parsing.
 - creating `~/.config/openface/config.json` if it does not exist
 - creating `~/.config/openface/model.json` if it does not exist
 - merging user config with defaults via `defu`
+- staging ONNX Runtime shared libraries into `os.tmpdir()` and updating the platform library path
 - applying the merged values to the Transformers `env`
 - reading and writing pulled-model metadata
 
@@ -90,5 +114,6 @@ It also configures help output and strict argument parsing.
 
 - The project is Bun-first and uses TypeScript throughout.
 - Commands are intentionally thin and defer model work to the task and config layers.
-- `pull` supports a broad set of Hugging Face task types through `SUPPORTED_TASKS`.
+- `pull` supports a broad set of Hugging Face task types through `SUPPORTED_TASKS` (25 tasks).
 - `run` is intentionally narrower right now and only has handlers for `translation` and `text-generation`.
+- The binary launcher supports cross-platform resolution without any native code in the launcher itself.

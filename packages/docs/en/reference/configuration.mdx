@@ -78,6 +78,19 @@ Pulled models are recorded in `model.json` by provider and model name:
 `run` depends on this registry. If a model exists in the cache directory but is missing from `model.json`, the CLI will
 not treat it as available.
 
+## ONNX Runtime library setup
+
+Before running any inference, the config layer tries to make the ONNX Runtime native library available. It:
+
+1. Locates the ONNX Runtime shared library from the packaged binary layout, the package root, or the monorepo root.
+2. Copies the shared libraries into a temporary directory (`os.tmpdir()`) so the binary can find them at runtime.
+3. Prepends that path to the platform-specific library search variable:
+   - `DYLD_FALLBACK_LIBRARY_PATH` on macOS
+   - `LD_LIBRARY_PATH` on Linux
+   - `PATH` on Windows
+
+This step runs automatically and silently; failures are caught and ignored so other operations continue.
+
 ## Inspecting config
 
 Use the built-in commands to inspect the merged runtime state:

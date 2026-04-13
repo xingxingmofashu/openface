@@ -36,7 +36,9 @@ This runs the root `dev` script, which delegates to `packages/openface/src/index
 bun run build
 ```
 
-This runs `packages/openface/scripts/build.ts` and writes the distributable CLI to `packages/openface/dist/openface`.
+This runs `packages/openface/scripts/build.ts` and produces platform-specific binaries under
+`packages/openface/dist/<platform>/bin/openface`. Pass `--single` to build for the current platform only,
+or `--baseline` to include AVX2-free x64 variants.
 
 </Step>
 <Step title="Type-check the workspace">
@@ -78,13 +80,15 @@ mint validate
 ├── packages/docs/          # Mintlify site
 └── packages/openface/
     ├── bin/openface        # launcher
-    ├── scripts/build.ts    # build script
-    ├── dist/openface       # built CLI output
+    ├── scripts/build.ts    # multi-platform build script
+    ├── dist/               # built CLI output (per platform)
+    │   └── <platform>/bin/openface
     └── src/
         ├── cli/
         │   ├── commands/   # yargs command modules
-        │   └── utils/      # REPL and helper utilities
-        ├── config/         # User config + model registry
+        │   ├── repl/       # REPL handler implementations
+        │   └── utils/      # createRepl, cmd, and UI helpers
+        ├── config/         # user config + model registry
         ├── tasks/          # Hub downloads and pipeline wrappers
         └── index.ts        # runtime entrypoint
 ```
