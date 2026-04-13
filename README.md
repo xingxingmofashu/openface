@@ -77,12 +77,14 @@ Useful built-in commands inside the REPL:
 
 ## Commands
 
-- `openface pull <modelId>`
-- `openface run <modelId> [--stream]`
-- `openface list`
-- `openface remove <modelId...>`
-- `openface config list`
-- `openface config get <name>`
+| Command | Description |
+| --- | --- |
+| `openface pull <modelId>` | Download a model from Hugging Face Hub |
+| `openface run <modelId> [--stream]` | Run a model in the interactive REPL |
+| `openface list` | List cached models (`ls` alias) |
+| `openface remove <modelId...>` | Remove cached models (`rm` alias) |
+| `openface config list` | Print all merged runtime config keys |
+| `openface config get <name>` | Print config entries matching a name |
 
 ## Configuration
 
@@ -92,6 +94,14 @@ OpenFace creates and uses two files under `~/.config/openface`:
 - `model.json` for the pulled-model registry
 
 Model artifacts are cached under `~/.local/share/openface/models` by default.
+
+## Supported Pull Tasks
+
+`pull` understands 25 Hugging Face task types, including `translation`, `text-generation`, `text-classification`,
+`summarization`, `question-answering`, `automatic-speech-recognition`, `image-classification`, and more. See
+[`src/tasks/pull/tasks.ts`](packages/openface/src/tasks/pull/tasks.ts) for the full list.
+
+`run` is intentionally narrower and currently only handles `translation` and `text-generation`.
 
 ## Development
 
@@ -104,7 +114,8 @@ bun dev
 bun typecheck
 ```
 
-The CLI launcher is `packages/openface/bin/openface`, and the build output is `packages/openface/dist/openface`.
+The CLI launcher is `packages/openface/bin/openface`, and the build output lands in
+`packages/openface/dist/<platform>/bin/openface` for each supported target platform.
 
 ## License
 
