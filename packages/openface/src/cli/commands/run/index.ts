@@ -1,5 +1,7 @@
 import { log } from "@clack/prompts"
 import { cmd } from "../../utils/cmd"
+import { useConfig } from "../../../config"
+import { createReplHandler, createRepl } from "../../utils/createRepl"
 
 export const RunCommand = cmd({
   command: "run <modelId>",
@@ -18,7 +20,6 @@ export const RunCommand = cmd({
         default: true,
       }),
   async handler(args) {
-    const { useConfig } = await import("../../../config/index")
     const { config, getModelInfo, exists } = await useConfig()
     if (!config.CACHE_DIR) {
       log.error("Cache directory is not configured.")
@@ -37,7 +38,6 @@ export const RunCommand = cmd({
     }
 
     try {
-      const { createReplHandler, createRepl } = await import("../../utils/createRepl")
       const replHandler = await createReplHandler(args.modelId, modelInfo.task!, args.stream)
       const repl = await createRepl(
         {

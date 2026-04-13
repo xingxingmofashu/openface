@@ -5,7 +5,7 @@ import { defu } from "defu"
 export type TextGenerationConfig = Record<string, any>
 
 export async function useTextGeneration(model: string, opts?: PretrainedModelOptions) {
-  const { config } = await useConfig()
+  const { config } = await useConfig({ syncTransformersEnv: true })
   const options = defu(opts, {
     cache_dir: config.CACHE_DIR,
   })

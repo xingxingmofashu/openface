@@ -2,6 +2,7 @@ import { createInterface, type ReadLineOptions } from "node:readline/promises"
 import clipboardy from "clipboardy"
 import { log } from "@clack/prompts"
 import type { PreTrainedTokenizer, Message, TextGenerationOutput } from "@huggingface/transformers"
+import { prepareTransformersRuntime } from "../../config"
 
 export interface CreateReplOptions extends ReadLineOptions {
   stream?: boolean
@@ -69,7 +70,8 @@ const createStreamer = async (tokenizer: PreTrainedTokenizer, stream: boolean) =
 }
 
 const createTranslationHandler = async (modelId: string, stream: boolean): Promise<ReplHandler> => {
-  const { useTranslation } = await import("../../tasks/translation/index")
+  await prepareTransformersRuntime()
+  const { useTranslation } = await import("../../tasks/translation")
   const { translator, tokenizer } = await useTranslation(modelId)
   return async (input: string) => {
     const output = await translator(input, {
@@ -80,7 +82,8 @@ const createTranslationHandler = async (modelId: string, stream: boolean): Promi
 }
 
 const createTextGenerationHandler = async (modelId: string, stream: boolean): Promise<ReplHandler> => {
-  const { useTextGeneration } = await import("../../tasks/text-generation/index")
+  await prepareTransformersRuntime()
+  const { useTextGeneration } = await import("../../tasks/text-generation")
   const { generator, tokenizer } = await useTextGeneration(modelId)
   return async (input: string) => {
     if (!input) return
