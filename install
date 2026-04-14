@@ -237,8 +237,13 @@ find_extracted_binary() {
   find "$dir" -type f \( -name 'openface' -o -name 'openface.exe' \) | head -n 1
 }
 
+find_extracted_root() {
+  local dir=$1
+  find "$dir" -mindepth 1 -maxdepth 1 -type d -name 'openface-*' | head -n 1
+}
+
 download_and_install() {
-  local archive_path extracted_binary
+  local archive_path extracted_binary extracted_root install_root
   tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/openface_install_XXXXXX")
   archive_path="$tmp_dir/$filename"
   trap '[[ -n "$tmp_dir" ]] && rm -rf "$tmp_dir"' EXIT
@@ -260,10 +265,25 @@ download_and_install() {
     exit 1
   fi
 
+  # Install the full platform directory (bin/ + runtime/) so that onnxruntime
+  # shared libraries are available at runtime alongside the binary.
+  extracted_root=$(find_extracted_root "$tmp_dir")
   installed_binary_name=$(basename "$extracted_binary")
-  mkdir -p "$INSTALL_DIR"
-  cp "$extracted_binary" "$INSTALL_DIR/$installed_binary_name"
-  chmod 755 "$INSTALL_DIR/$installed_binary_name"
+  if [[ -n "$extracted_root" ]]; then
+    # Place the platform dir one level above INSTALL_DIR so the layout becomes:
+    #   <parent>/bin/openface   (INSTALL_DIR/openface)
+    #   <parent>/runtime/...
+    install_root=$(dirname "$INSTALL_DIR")
+    mkdir -p "$install_root"
+    rm -rf "$INSTALL_DIR"
+    cp -r "$extracted_root/." "$install_root/"
+    chmod 755 "$INSTALL_DIR/$installed_binary_name"
+  else
+    # Fallback: copy only the binary (no runtime dir found in archive)
+    mkdir -p "$INSTALL_DIR"
+    cp "$extracted_binary" "$INSTALL_DIR/$installed_binary_name"
+    chmod 755 "$INSTALL_DIR/$installed_binary_name"
+  fi
 }
 
 install_from_binary() {
