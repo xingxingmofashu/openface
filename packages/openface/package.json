@@ -12,8 +12,7 @@
   },
   "scripts": {
     "dev": "bun run --conditions=browser ./src/index.ts",
-    "build": "bun run scripts/build.ts",
-    "typecheck": "bunx tsc --noEmit"
+    "build": "bun run scripts/build.ts"
   },
   "dependencies": {
     "@clack/prompts": "^1.2.0",

@@ -70,4 +70,3 @@ export const createReplHandler = async (modelId: string, task: string, stream: b
       throw new Error(`Unsupported task type: ${task}`)
   }
 }
-  

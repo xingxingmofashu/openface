@@ -10,7 +10,9 @@
     "docs:dev": "cd packages/docs && mint dev",
     "docs:validate": "cd packages/docs && mint validate",
     "prepare": "husky",
-    "typecheck": "bunx tsc --noEmit"
+    "typecheck": "bunx tsc --noEmit",
+    "lint": "bunx prettier --check .",
+    "format": "bunx prettier --write ."
   },
   "workspaces": {
     "packages": [

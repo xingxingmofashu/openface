@@ -34,11 +34,7 @@
             "groups": [
               {
                 "group": "Getting Started",
-                "pages": [
-                  "en/index",
-                  "en/quickstart",
-                  "en/development"
-                ]
+                "pages": ["en/index", "en/quickstart", "en/development"]
               },
               {
                 "group": "Commands",
@@ -57,11 +53,7 @@
             "groups": [
               {
                 "group": "Reference",
-                "pages": [
-                  "en/reference/repl",
-                  "en/reference/configuration",
-                  "en/reference/architecture"
-                ]
+                "pages": ["en/reference/repl", "en/reference/configuration", "en/reference/architecture"]
               }
             ]
           }
@@ -79,12 +71,7 @@
     ]
   },
   "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude"
-    ]
+    "options": ["copy", "view", "chatgpt", "claude"]
   },
   "footer": {
     "socials": {

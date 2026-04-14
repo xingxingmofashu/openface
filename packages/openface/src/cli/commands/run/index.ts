@@ -51,5 +51,5 @@ export const RunCommand = cmd({
     } catch (error) {
       log.error(error instanceof Error ? error.message : "Failed to create handler")
     }
-  }
+  },
 })

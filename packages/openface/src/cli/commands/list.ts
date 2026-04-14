@@ -11,7 +11,7 @@ export const ListCommand = cmd({
   aliases: ["ls"],
   async handler() {
     const { config } = await useConfig()
-    if(!config.CACHE_DIR) {
+    if (!config.CACHE_DIR) {
       log.error("Cache directory is not configured.")
       process.exit(1)
     }

@@ -51,7 +51,6 @@ import {
   ZeroShotObjectDetectionPipeline,
 } from "@huggingface/transformers"
 
-
 export const SUPPORTED_TASKS = Object.freeze({
   "text-classification": {
     pipeline: TextClassificationPipeline,

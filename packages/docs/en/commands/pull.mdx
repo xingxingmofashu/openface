@@ -11,9 +11,9 @@ openface pull <modelId>
 
 ## Positionals
 
-| Argument | Required | Description |
-| --- | --- | --- |
-| `modelId` | Yes | Hugging Face repository ID such as `Helsinki-NLP/opus-mt-zh-en`. |
+| Argument  | Required | Description                                                      |
+| --------- | -------- | ---------------------------------------------------------------- |
+| `modelId` | Yes      | Hugging Face repository ID such as `Helsinki-NLP/opus-mt-zh-en`. |
 
 ## Common examples
 
@@ -39,33 +39,33 @@ The exact download set comes from `SUPPORTED_TASKS` in `packages/openface/src/ta
 
 `pull` understands all 25 Hugging Face task types listed below:
 
-| Task | Type |
-| --- | --- |
-| `text-classification` | text |
-| `token-classification` | text |
-| `question-answering` | text |
-| `fill-mask` | text |
-| `summarization` | text |
-| `translation` | text |
-| `text2text-generation` | text |
-| `text-generation` | text |
-| `zero-shot-classification` | text |
-| `text-to-audio` | text |
-| `feature-extraction` | text |
-| `audio-classification` | audio |
+| Task                             | Type       |
+| -------------------------------- | ---------- |
+| `text-classification`            | text       |
+| `token-classification`           | text       |
+| `question-answering`             | text       |
+| `fill-mask`                      | text       |
+| `summarization`                  | text       |
+| `translation`                    | text       |
+| `text2text-generation`           | text       |
+| `text-generation`                | text       |
+| `zero-shot-classification`       | text       |
+| `text-to-audio`                  | text       |
+| `feature-extraction`             | text       |
+| `audio-classification`           | audio      |
 | `zero-shot-audio-classification` | multimodal |
-| `automatic-speech-recognition` | multimodal |
-| `image-to-text` | multimodal |
-| `image-classification` | multimodal |
-| `image-segmentation` | multimodal |
+| `automatic-speech-recognition`   | multimodal |
+| `image-to-text`                  | multimodal |
+| `image-classification`           | multimodal |
+| `image-segmentation`             | multimodal |
 | `zero-shot-image-classification` | multimodal |
-| `object-detection` | multimodal |
-| `zero-shot-object-detection` | multimodal |
-| `document-question-answering` | multimodal |
-| `background-removal` | image |
-| `image-to-image` | image |
-| `depth-estimation` | image |
-| `image-feature-extraction` | image |
+| `object-detection`               | multimodal |
+| `zero-shot-object-detection`     | multimodal |
+| `document-question-answering`    | multimodal |
+| `background-removal`             | image      |
+| `image-to-image`                 | image      |
+| `depth-estimation`               | image      |
+| `image-feature-extraction`       | image      |
 
 This list is wider than the current runtime support of `openface run`.
 
