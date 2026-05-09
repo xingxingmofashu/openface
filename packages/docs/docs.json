@@ -34,11 +34,7 @@
             "groups": [
               {
                 "group": "Getting Started",
-                "pages": [
-                  "en/index",
-                  "en/quickstart",
-                  "en/development"
-                ]
+                "pages": ["en/index", "en/quickstart", "en/development"]
               },
               {
                 "group": "Commands",
@@ -79,12 +75,7 @@
     ]
   },
   "contextual": {
-    "options": [
-      "copy",
-      "view",
-      "chatgpt",
-      "claude"
-    ]
+    "options": ["copy", "view", "chatgpt", "claude"]
   },
   "footer": {
     "socials": {

@@ -11,24 +11,27 @@ Install once from the repo root: `bun install`
 
 ## Key Commands
 
-| Command | Notes |
-|---|---|
-| `bun install` | Root only; installs all workspace deps |
-| `bun run build` | Delegates to `packages/openface/scripts/build.ts`; builds all cross-platform binaries |
-| `bun dev` | Runs CLI source directly via `--conditions=browser`; no build step needed |
-| `bun typecheck` | Runs `tsc --noEmit` across the workspace; also runs as pre-commit hook |
-| `bun run docs:dev` | Starts Mintlify dev server for `packages/docs/` |
-| `bun run docs:validate` | Validates docs build |
+| Command                 | Notes                                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------- |
+| `bun install`           | Root only; installs all workspace deps                                                |
+| `bun run build`         | Delegates to `packages/openface/scripts/build.ts`; builds all cross-platform binaries |
+| `bun dev`               | Runs CLI source directly via `--conditions=browser`; no build step needed             |
+| `bun typecheck`         | Runs `tsc --noEmit` across the workspace; also runs as pre-commit hook                |
+| `bun run docs:dev`      | Starts Mintlify dev server for `packages/docs/`                                       |
+| `bun run docs:validate` | Validates docs build                                                                  |
 
 To build only the current platform (faster):
+
 ```bash
 bun run scripts/build.ts --single
 ```
+
 Run from `packages/openface/` or as `bun run --cwd packages/openface build`.
 
 ## Build Output
 
 Build produces per-platform subdirectories, not a single binary:
+
 ```
 packages/openface/dist/openface-darwin-arm64/bin/openface
 packages/openface/dist/openface-linux-x64/bin/openface

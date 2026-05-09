@@ -1,8 +1,8 @@
-import { cmd } from "../../utils/cmd"
-import type { ProgressInfo } from "@huggingface/transformers"
-import { intro, outro, progress as createProgress } from "@clack/prompts"
-import { UI } from "../../utils/ui"
-import { prepareTransformersRuntime } from "../../../config"
+import { cmd } from "../../utils/cmd";
+import type { ProgressInfo } from "@huggingface/transformers";
+import { intro, outro, progress as createProgress } from "@clack/prompts";
+import { UI } from "../../utils/ui";
+import { prepareTransformersRuntime } from "../../../config";
 
 export const PullCommand = cmd({
   command: "pull <modelId>",
@@ -14,31 +14,33 @@ export const PullCommand = cmd({
       demandOption: true,
     }),
   handler: async (args) => {
-    await prepareTransformersRuntime()
-    const { pull } = await import("../../../tasks/pull")
-    const progress = createProgress({ style: "block", max: 100 })
+    await prepareTransformersRuntime();
+    const { pull } = await import("../../../tasks/pull");
+    const progress = createProgress({ style: "block", max: 100 });
     try {
-      intro(`Pulling model '${args.modelId}' ...`)
-      progress.start("Starting download")
-      let currentProgress = 0
+      intro(`Pulling model '${args.modelId}' ...`);
+      progress.start("Starting download");
+      let currentProgress = 0;
       await pull(args.modelId, {
         progress_callback: (info: ProgressInfo) => {
           if (info.status === "progress_total") {
-            const t = Math.round(info.progress * 100) / 100
-            const c = Math.round(currentProgress * 100) / 100
-            const diff = t - c
+            const t = Math.round(info.progress * 100) / 100;
+            const c = Math.round(currentProgress * 100) / 100;
+            const diff = t - c;
             if (diff >= 0.01) {
-              progress.advance(diff, `${UI.Style.TEXT_HIGHLIGHT}Downloading ${t}% `)
-              currentProgress = info.progress
+              progress.advance(diff, `${UI.Style.TEXT_HIGHLIGHT}Downloading ${t}% `);
+              currentProgress = info.progress;
             }
           }
         },
-      })
-      progress.stop(`Model '${args.modelId}' pulled successfully!`)
-      outro("Download complete!")
+      });
+      progress.stop(`Model '${args.modelId}' pulled successfully!`);
+      outro("Download complete!");
     } catch (error) {
-      progress.error(`Failed to pull model: ${error instanceof Error ? error.message : String(error)}`)
-      process.exit(1)
+      progress.error(
+        `Failed to pull model: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      process.exit(1);
     }
   },
-})
+});

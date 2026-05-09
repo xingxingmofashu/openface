@@ -77,14 +77,14 @@ Useful built-in commands inside the REPL:
 
 ## Commands
 
-| Command | Description |
-| --- | --- |
-| `openface pull <modelId>` | Download a model from Hugging Face Hub |
-| `openface run <modelId> [--stream]` | Run a model in the interactive REPL |
-| `openface list` | List cached models (`ls` alias) |
-| `openface remove <modelId...>` | Remove cached models (`rm` alias) |
-| `openface config list` | Print all merged runtime config keys |
-| `openface config get <name>` | Print config entries matching a name |
+| Command                             | Description                            |
+| ----------------------------------- | -------------------------------------- |
+| `openface pull <modelId>`           | Download a model from Hugging Face Hub |
+| `openface run <modelId> [--stream]` | Run a model in the interactive REPL    |
+| `openface list`                     | List cached models (`ls` alias)        |
+| `openface remove <modelId...>`      | Remove cached models (`rm` alias)      |
+| `openface config list`              | Print all merged runtime config keys   |
+| `openface config get <name>`        | Print config entries matching a name   |
 
 ## Configuration
 

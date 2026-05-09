@@ -24,8 +24,6 @@ import {
   AutoModelForUniversalSegmentation,
   AutoModelForVision2Seq,
   AutoModelForZeroShotObjectDetection,
-  AutoProcessor,
-  AutoTokenizer,
   BackgroundRemovalPipeline,
   DepthEstimationPipeline,
   DocumentQuestionAnsweringPipeline,
@@ -49,8 +47,7 @@ import {
   ZeroShotClassificationPipeline,
   ZeroShotImageClassificationPipeline,
   ZeroShotObjectDetectionPipeline,
-} from "@huggingface/transformers"
-
+} from "@huggingface/transformers";
 
 export const SUPPORTED_TASKS = Object.freeze({
   "text-classification": {
@@ -178,7 +175,11 @@ export const SUPPORTED_TASKS = Object.freeze({
   },
   "image-segmentation": {
     pipeline: ImageSegmentationPipeline,
-    model: [AutoModelForImageSegmentation, AutoModelForSemanticSegmentation, AutoModelForUniversalSegmentation],
+    model: [
+      AutoModelForImageSegmentation,
+      AutoModelForSemanticSegmentation,
+      AutoModelForUniversalSegmentation,
+    ],
     default: {
       model: "Xenova/detr-resnet-50-panoptic",
     },
@@ -186,7 +187,11 @@ export const SUPPORTED_TASKS = Object.freeze({
   },
   "background-removal": {
     pipeline: BackgroundRemovalPipeline,
-    model: [AutoModelForImageSegmentation, AutoModelForSemanticSegmentation, AutoModelForUniversalSegmentation],
+    model: [
+      AutoModelForImageSegmentation,
+      AutoModelForSemanticSegmentation,
+      AutoModelForUniversalSegmentation,
+    ],
     default: {
       model: "Xenova/modnet",
     },
@@ -258,6 +263,6 @@ export const SUPPORTED_TASKS = Object.freeze({
     },
     type: "image",
   },
-})
+});
 
-export type SUPPORTED_TASKS_TYPES = keyof typeof SUPPORTED_TASKS
+export type SUPPORTED_TASKS_TYPES = keyof typeof SUPPORTED_TASKS;
