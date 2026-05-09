@@ -14,5 +14,5 @@ export namespace UI {
     TEXT_SUCCESS_BOLD: "\x1b[92m\x1b[1m",
     TEXT_INFO: "\x1b[94m",
     TEXT_INFO_BOLD: "\x1b[94m\x1b[1m",
-  }
+  };
 }

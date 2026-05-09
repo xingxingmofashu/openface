@@ -1,12 +1,12 @@
 {
-  "version": "0.1.3",
   "name": "openface",
-  "type": "module",
-  "license": "MIT",
+  "version": "0.1.3",
   "private": true,
+  "license": "MIT",
   "bin": {
     "openface": "./bin/openface"
   },
+  "type": "module",
   "exports": {
     "./*": "./src/*.ts"
   },
