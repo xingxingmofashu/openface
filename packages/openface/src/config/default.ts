@@ -1,8 +1,8 @@
-import os from "node:os";
-import { resolve } from "node:path";
+import os from "node:os"
+import { resolve } from "node:path"
 
-export const OPENFACE_APP_DIR = "openface";
-const cacheDir = resolve(os.homedir(), `.local/share/${OPENFACE_APP_DIR}/models/`);
+export const OPENFACE_APP_DIR = "openface"
+const cacheDir = resolve(os.homedir(), `.local/share/${OPENFACE_APP_DIR}/models/`)
 
 export const config = {
   LOG_LEVEL: 40,
@@ -13,4 +13,4 @@ export const config = {
   REMOTE_PATH_TEMPLATE: "{model}/resolve/{revision}/",
   ALLOW_LOCAL_MODELS: true,
   ALLOW_REMOTE_MODELS: true,
-};
+}

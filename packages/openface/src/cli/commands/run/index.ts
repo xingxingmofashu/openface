@@ -1,7 +1,7 @@
-import { log } from "@clack/prompts";
-import { cmd } from "../../utils/cmd";
-import { useConfig } from "../../../config";
-import { createReplHandler, createRepl } from "../../utils/createRepl";
+import { log } from "@clack/prompts"
+import { cmd } from "../../utils/cmd"
+import { useConfig } from "../../../config"
+import { createReplHandler, createRepl } from "../../utils/createRepl"
 
 export const RunCommand = cmd({
   command: "run <modelId>",
@@ -20,25 +20,25 @@ export const RunCommand = cmd({
         default: true,
       }),
   async handler(args) {
-    const { config, getModelInfo, exists } = await useConfig();
+    const { config, getModelInfo, exists } = await useConfig()
     if (!config.CACHE_DIR) {
-      log.error("Cache directory is not configured.");
-      return;
+      log.error("Cache directory is not configured.")
+      return
     }
 
     if (!(await exists(args.modelId))) {
-      log.error(`Model ${args.modelId} not found in configuration.`);
-      return;
+      log.error(`Model ${args.modelId} not found in configuration.`)
+      return
     }
 
-    const modelInfo = await getModelInfo(args.modelId);
+    const modelInfo = await getModelInfo(args.modelId)
     if (!modelInfo) {
-      log.error(`Model ${args.modelId} not found in configuration.`);
-      return;
+      log.error(`Model ${args.modelId} not found in configuration.`)
+      return
     }
 
     try {
-      const replHandler = await createReplHandler(args.modelId, modelInfo.task!, args.stream);
+      const replHandler = await createReplHandler(args.modelId, modelInfo.task!, args.stream)
       const repl = await createRepl(
         {
           input: process.stdin,
@@ -46,10 +46,10 @@ export const RunCommand = cmd({
           stream: args.stream,
         },
         replHandler,
-      );
-      repl.close();
+      )
+      repl.close()
     } catch (error) {
-      log.error(error instanceof Error ? error.message : "Failed to create handler");
+      log.error(error instanceof Error ? error.message : "Failed to create handler")
     }
   },
-});
+})

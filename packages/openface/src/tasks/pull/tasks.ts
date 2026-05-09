@@ -47,7 +47,7 @@ import {
   ZeroShotClassificationPipeline,
   ZeroShotImageClassificationPipeline,
   ZeroShotObjectDetectionPipeline,
-} from "@huggingface/transformers";
+} from "@huggingface/transformers"
 
 export const SUPPORTED_TASKS = Object.freeze({
   "text-classification": {
@@ -263,6 +263,6 @@ export const SUPPORTED_TASKS = Object.freeze({
     },
     type: "image",
   },
-});
+})
 
-export type SUPPORTED_TASKS_TYPES = keyof typeof SUPPORTED_TASKS;
+export type SUPPORTED_TASKS_TYPES = keyof typeof SUPPORTED_TASKS
